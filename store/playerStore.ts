@@ -8,6 +8,7 @@ interface PlayerState {
   originalQueue: Song[];
   isPlaying: boolean;
   isLoading: boolean;
+  isLiked: boolean;
   volume: number;
   isMuted: boolean;
   progress: number;
@@ -15,7 +16,6 @@ interface PlayerState {
   shuffle: boolean;
   repeat: RepeatMode;
 
-  // Actions
   playSong: (song: Song, queue?: Song[]) => void;
   togglePlay: () => void;
   playNext: () => void;
@@ -26,6 +26,7 @@ interface PlayerState {
   toggleMute: () => void;
   toggleShuffle: () => void;
   toggleRepeat: () => void;
+  setLiked: (v: boolean) => void;
   addToQueue: (song: Song) => void;
   removeFromQueue: (id: string) => void;
   clearQueue: () => void;
@@ -39,6 +40,7 @@ export const usePlayerStore = create<PlayerState>()(
     originalQueue: [],
     isPlaying: false,
     isLoading: false,
+    isLiked: false,
     volume: 0.8,
     isMuted: false,
     progress: 0,
@@ -51,6 +53,7 @@ export const usePlayerStore = create<PlayerState>()(
         s.currentSong = song;
         s.isPlaying = true;
         s.progress = 0;
+        s.isLiked = song.isLiked ?? false;
         if (queue) {
           s.originalQueue = queue;
           s.queue = queue.filter((q) => q.id !== song.id);
@@ -58,13 +61,11 @@ export const usePlayerStore = create<PlayerState>()(
       }),
 
     togglePlay: () =>
-      set((s) => {
-        s.isPlaying = !s.isPlaying;
-      }),
+      set((s) => { s.isPlaying = !s.isPlaying; }),
 
     playNext: () => {
-      const { queue, repeat, currentSong, originalQueue } = get();
-      if (repeat === "one" && currentSong) {
+      const { queue, repeat, originalQueue } = get();
+      if (repeat === "one") {
         set((s) => { s.progress = 0; s.isPlaying = true; });
         return;
       }
@@ -72,6 +73,7 @@ export const usePlayerStore = create<PlayerState>()(
         if (repeat === "all" && originalQueue.length > 0) {
           set((s) => {
             s.currentSong = originalQueue[0];
+            s.isLiked = originalQueue[0].isLiked ?? false;
             s.queue = originalQueue.slice(1);
             s.progress = 0;
           });
@@ -80,6 +82,7 @@ export const usePlayerStore = create<PlayerState>()(
       }
       set((s) => {
         s.currentSong = s.queue[0];
+        s.isLiked = s.queue[0].isLiked ?? false;
         s.queue = s.queue.slice(1);
         s.progress = 0;
         s.isPlaying = true;
@@ -97,26 +100,23 @@ export const usePlayerStore = create<PlayerState>()(
       if (idx > 0) {
         set((s) => {
           s.currentSong = originalQueue[idx - 1];
+          s.isLiked = originalQueue[idx - 1].isLiked ?? false;
           s.progress = 0;
           s.isPlaying = true;
         });
       }
     },
 
-    setProgress: (p) => set((s) => { s.progress = p; }),
-    setDuration: (d) => set((s) => { s.duration = d; }),
-    setLoading: (v) => set((s) => { s.isLoading = v; }),
+    setProgress:  (p) => set((s) => { s.progress = p; }),
+    setDuration:  (d) => set((s) => { s.duration = d; }),
+    setLoading:   (v) => set((s) => { s.isLoading = v; }),
+    setLiked:     (v) => set((s) => { s.isLiked = v; }),
 
     setVolume: (v) =>
-      set((s) => {
-        s.volume = v;
-        s.isMuted = v === 0;
-      }),
+      set((s) => { s.volume = v; s.isMuted = v === 0; }),
 
     toggleMute: () =>
-      set((s) => {
-        s.isMuted = !s.isMuted;
-      }),
+      set((s) => { s.isMuted = !s.isMuted; }),
 
     toggleShuffle: () =>
       set((s) => {
@@ -145,14 +145,9 @@ export const usePlayerStore = create<PlayerState>()(
       }),
 
     removeFromQueue: (id) =>
-      set((s) => {
-        s.queue = s.queue.filter((q) => q.id !== id);
-      }),
+      set((s) => { s.queue = s.queue.filter((q) => q.id !== id); }),
 
     clearQueue: () =>
-      set((s) => {
-        s.queue = [];
-        s.originalQueue = [];
-      }),
+      set((s) => { s.queue = []; s.originalQueue = []; }),
   }))
 );

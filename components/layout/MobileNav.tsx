@@ -2,25 +2,61 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
-import { Home, Search, Library, Heart, Radio } from "lucide-react";
+import {
+  Home, Search, ListMusic,
+  Heart, Radio, Shield,
+  Music2, Users, LayoutDashboard,
+} from "lucide-react";
 
-const links = [
-  { href: "/dashboard", icon: Home,    label: "Accueil" },
-  { href: "/search",    icon: Search,  label: "Recherche" },
-  { href: "/library",   icon: Library, label: "Librairie" },
-  { href: "/favorites", icon: Heart,   label: "Favoris" },
-  { href: "/radio",     icon: Radio,   label: "Radio" },
+const userLinks = [
+  { href: "/dashboard", icon: Home,      label: "Accueil" },
+  { href: "/search",    icon: Search,    label: "Recherche" },
+  { href: "/playlists", icon: ListMusic, label: "Playlists" },
+  { href: "/favorites", icon: Heart,     label: "Favoris" },
+  { href: "/radio",     icon: Radio,     label: "Radio" },
+];
+
+const userLinksWithAdmin = [
+  { href: "/dashboard", icon: Home,      label: "Accueil" },
+  { href: "/search",    icon: Search,    label: "Recherche" },
+  { href: "/playlists", icon: ListMusic, label: "Playlists" },
+  { href: "/favorites", icon: Heart,     label: "Favoris" },
+  { href: "/admin",     icon: Shield,    label: "Admin" },
+];
+
+const adminLinks = [
+  { href: "/dashboard",     icon: Home,            label: "Accueil" },
+  { href: "/admin",         icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/admin/artists", icon: Users,           label: "Artistes" },
+  { href: "/admin/library", icon: Music2,          label: "Library" },
+  { href: "/admin/users",   icon: Users,           label: "Users" },
 ];
 
 export function MobileNav() {
   const pathname = usePathname();
+  const { isAdmin } = useCurrentUser();
+
+  if (pathname === "/player") return null;
+
+  // Sur les pages admin → nav admin
+  // Sur les autres pages + admin → nav normale avec bouton admin
+  // Sur les autres pages sans admin → nav normale
+  const links = pathname.startsWith("/admin")
+    ? adminLinks
+    : isAdmin
+    ? userLinksWithAdmin
+    : userLinks;
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0d0d0d]/95 backdrop-blur-md border-t border-white/5">
-      <div className="flex items-center justify-around px-2 py-2 pb-safe">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0d0d0d]/97 backdrop-blur-md border-t border-white/5">
+      <div className="flex items-center justify-around px-2 py-2">
         {links.map(({ href, icon: Icon, label }) => {
-          const isActive = pathname === href || pathname.startsWith(href + "/");
+          const isActive =
+            pathname === href ||
+            (href !== "/dashboard" && href !== "/" && pathname.startsWith(href));
+
           return (
             <Link
               key={href}

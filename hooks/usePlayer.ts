@@ -12,9 +12,16 @@ export function usePlayer() {
     engineRef.current = getAudioEngine();
   }, []);
 
+  // Démarre la lecture quand le son change
   useEffect(() => {
     if (!store.currentSong) return;
     engineRef.current?.play(store.currentSong.audioUrl);
+
+    // Vérifie si le son est liké par l'utilisateur
+    fetch(`/api/songs/${store.currentSong.id}/like`)
+      .then((r) => r.json())
+      .then((d) => store.setLiked(d.liked ?? false))
+      .catch(() => {});
   }, [store.currentSong?.id]);
 
   useEffect(() => {

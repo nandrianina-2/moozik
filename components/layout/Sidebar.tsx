@@ -6,13 +6,17 @@ import { cn } from "@/lib/utils";
 import {
   Home, Search, Library, Heart, Radio,
   Music2, Upload, BarChart2, Settings,
-  ChevronRight,
+  ChevronRight, Users, ListMusic, Shield,
 } from "lucide-react";
+import { AdminLinks } from "./AdminLinks";
+
 
 const mainLinks = [
   { href: "/dashboard", icon: Home,    label: "Accueil" },
   { href: "/search",    icon: Search,  label: "Recherche" },
   { href: "/library",   icon: Library, label: "Bibliothèque" },
+  { href: "/artists",   icon: Users,   label: "Artistes" },
+  { href: "/playlists",  icon: ListMusic, label: "Playlists" },
   { href: "/favorites", icon: Heart,   label: "Favoris" },
   { href: "/radio",     icon: Radio,   label: "Radio" },
 ];
@@ -23,6 +27,13 @@ const artistLinks = [
   { href: "/studio/analytics",  icon: BarChart2, label: "Analytics" },
 ];
 
+const adminLinks = [
+  { href: "/admin",          icon: Shield,    label: "Dashboard" },
+  { href: "/admin/artists",  icon: Users,     label: "Artistes" },
+  { href: "/admin/library",  icon: Music2,    label: "Bibliothèque" },
+  { href: "/admin/users",    icon: Users,     label: "Utilisateurs" },
+];
+
 interface NavLinkProps {
   href: string;
   icon: React.ElementType;
@@ -30,7 +41,7 @@ interface NavLinkProps {
   exact?: boolean;
 }
 
-function NavLink({ href, icon: Icon, label }: NavLinkProps) {
+export function NavLink({ href, icon: Icon, label }: NavLinkProps) {
   const pathname = usePathname();
   const isActive = pathname === href || pathname.startsWith(href + "/");
 
@@ -83,9 +94,12 @@ export function Sidebar() {
           </span>
         </div>
 
+        {/* Section admin — visible uniquement pour les admins */}
+
         {artistLinks.map((link) => (
           <NavLink key={link.href} {...link} />
         ))}
+        <AdminLinks />
       </nav>
 
       {/* Pied de sidebar */}
