@@ -3,8 +3,10 @@ import mongoose, { Schema, type Document, type Model } from "mongoose";
 export interface IUser extends Document {
   name: string;
   email: string;
+  username?: string;   // add
   password?: string;
   image?: string;
+  bio?: string;        // add
   role: "user" | "artist" | "admin";
   isPremium: boolean;
   premiumUntil?: Date;
@@ -16,12 +18,19 @@ export interface IUser extends Document {
   following: mongoose.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
+  coverImage:  { type: String },
+  socialLinks: {
+    instagram: { type: String },
+    twitter:   { type: String },
+    website:   { type: String },
+  },
 }
 
 const UserSchema = new Schema<IUser>(
   {
     name:             { type: String, required: true, trim: true },
     email:            { type: String, required: true, unique: true, lowercase: true, trim: true },
+    username:         { type: String, unique: true, sparse: true, lowercase: true, trim: true },
     password:         { type: String, select: false },
     image:            { type: String },
     role:             { type: String, enum: ["user", "artist", "admin"], default: "user" },
@@ -33,6 +42,7 @@ const UserSchema = new Schema<IUser>(
     resetToken:       { type: String },
     resetTokenExpiry: { type: Date },
     following:        [{ type: Schema.Types.ObjectId, ref: "Artist" }],
+    bio:              { type: String, maxlength: 300 },
   },
   { timestamps: true }
 );
