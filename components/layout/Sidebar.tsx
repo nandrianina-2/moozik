@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import {
   Home, Search, Library, Heart, Radio,
   Music2, Upload, BarChart2, Settings,
-  ChevronRight, Users, ListMusic, Shield,
+  ChevronRight, Users, ListMusic, History, Shield
 } from "lucide-react";
 import { AdminLinks } from "./AdminLinks";
 
@@ -18,6 +18,7 @@ const mainLinks = [
   { href: "/artists",   icon: Users,   label: "Artistes" },
   { href: "/playlists",  icon: ListMusic, label: "Playlists" },
   { href: "/favorites", icon: Heart,   label: "Favoris" },
+  { href: "/history",   icon: History,   label: "Historique" },
   { href: "/radio",     icon: Radio,   label: "Radio" },
 ];
 

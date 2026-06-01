@@ -33,3 +33,5 @@ body {
 ::selection {
   background: #7f77dd40;
 }
+
+* { scrollbar-width: thin; scrollbar-color: #5c4d8a #1e1e1e; } *::-webkit-scrollbar { width: 8px; /* un peu plus large pour voir l'arrondi */ } *::-webkit-scrollbar-track { background: #1e1e1e; border-radius: 99px; margin: 6px 0; /* espace en haut et en bas */ } *::-webkit-scrollbar-thumb { background: #5c4d8a; border-radius: 99px; border: 2px solid #141414; /* crée un effet "flottant" */ } *::-webkit-scrollbar-thumb:hover { background: #7b5ec4; }

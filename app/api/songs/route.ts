@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Profil artiste introuvable" }, { status: 404 });
     }
 
-    const { title, audioUrl, coverUrl, duration, genres, lyrics } =
+    const { title, audioUrl, coverUrl, duration, genres, lyrics, releaseDate, isPublished, scheduledAt } =
       await req.json();
 
     if (!title?.trim() || !audioUrl) {
