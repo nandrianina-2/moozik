@@ -102,6 +102,7 @@ export function MiniPlayer() {
 
             <button
               onClick={togglePlay}
+              title="Play/Pause (Espace)"
               disabled={isLoading}
               className="w-10 h-10 rounded-full bg-white flex items-center justify-center active:scale-90 transition-transform disabled:opacity-50"
             >
@@ -181,6 +182,7 @@ export function MiniPlayer() {
 
             <button
               onClick={togglePlay}
+              title="Play/Pause (Espace)"
               disabled={isLoading}
               className="w-9 h-9 rounded-full bg-white flex items-center justify-center hover:scale-105 active:scale-95 transition-transform disabled:opacity-50"
             >

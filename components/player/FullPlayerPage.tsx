@@ -14,12 +14,14 @@ import { CommentsPanel } from "./panels/CommentsPanel";
 import { InfosPanel } from "./panels/InfosPanel";
 import { FloatingComments } from "./FloatingComments";
 import { cn } from "@/lib/utils";
+import { Waveform } from "./Waveform";
+import { formatDuration } from "@/lib/utils";
 
 type Panel = "infos" | "comments" | "queue";
 
 export function FullPlayerPage() {
   const router = useRouter();
-  const { currentSong } = usePlayerStore();
+  const { currentSong, progress, duration } = usePlayerStore();
   const [activePanel, setActivePanel] = useState<Panel>("infos");
 
   useEffect(() => {
@@ -108,8 +110,12 @@ export function FullPlayerPage() {
         </div>
 
         {/* Progress */}
-        <div className="px-6 mb-4">
-          <ProgressBar />
+        <div className="px-6 mb-4 space-y-2">
+          <Waveform audioUrl={currentSong.audioUrl} />
+          <div className="flex justify-between text-xs text-white/30 tabular-nums">
+            <span>{formatDuration(progress)}</span>
+            <span>{formatDuration(duration)}</span>
+          </div>
         </div>
 
         {/* Contrôles */}
@@ -203,7 +209,13 @@ export function FullPlayerPage() {
 
           {/* Progress + contrôles + volume */}
           <div className="space-y-5">
-            <ProgressBar />
+            <div className="space-y-1.5">
+              <Waveform audioUrl={currentSong.audioUrl} />
+              <div className="flex justify-between text-xs text-white/30 tabular-nums px-0.5">
+                <span>{formatDuration(progress)}</span>
+                <span>{formatDuration(duration)}</span>
+              </div>
+            </div>
             <div className="flex justify-center">
               <PlayerControls />
             </div>

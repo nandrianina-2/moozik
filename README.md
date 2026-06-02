@@ -38,17 +38,66 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 ```
 
 ```
+
+```
 moozik
 ├─ .husky
-│  └─ pre-commit
+│  ├─ pre-commit
+│  └─ _
+│     ├─ applypatch-msg
+│     ├─ commit-msg
+│     ├─ h
+│     ├─ husky.sh
+│     ├─ post-applypatch
+│     ├─ post-checkout
+│     ├─ post-commit
+│     ├─ post-merge
+│     ├─ post-rewrite
+│     ├─ pre-applypatch
+│     ├─ pre-auto-gc
+│     ├─ pre-commit
+│     ├─ pre-merge-commit
+│     ├─ pre-push
+│     ├─ pre-rebase
+│     └─ prepare-commit-msg
 ├─ AGENTS.md
 ├─ app
 │  ├─ (admin)
+│  │  ├─ admin
+│  │  │  ├─ artists
+│  │  │  │  ├─ ArtistsAdminClient.tsx
+│  │  │  │  └─ page.tsx
+│  │  │  ├─ library
+│  │  │  │  ├─ LibraryClient.tsx
+│  │  │  │  └─ page.tsx
+│  │  │  ├─ page.tsx
+│  │  │  └─ users
+│  │  │     ├─ page.tsx
+│  │  │     └─ UsersClient.tsx
+│  │  └─ layout.tsx
 │  ├─ (artist)
+│  │  ├─ layout.tsx
+│  │  └─ studio
+│  │     ├─ analytics
+│  │     │  ├─ AnalyticsClient.tsx
+│  │     │  └─ page.tsx
+│  │     ├─ page.tsx
+│  │     ├─ songs
+│  │     │  └─ [id]
+│  │     │     ├─ EditSongForm.tsx
+│  │     │     └─ page.tsx
+│  │     ├─ SongsList.tsx
+│  │     └─ upload
+│  │        ├─ page.tsx
+│  │        └─ UploadForm.tsx
 │  ├─ (auth)
+│  │  ├─ account
+│  │  │  └─ page.tsx
 │  │  ├─ dashboard
 │  │  │  └─ page.tsx
 │  │  ├─ favorites
+│  │  │  └─ page.tsx
+│  │  ├─ history
 │  │  │  └─ page.tsx
 │  │  ├─ layout.tsx
 │  │  ├─ library
@@ -72,24 +121,47 @@ moozik
 │  │  │     ├─ AlbumClient.tsx
 │  │  │     └─ page.tsx
 │  │  ├─ artists
+│  │  │  ├─ ArtistsGrid.tsx
+│  │  │  ├─ page.tsx
 │  │  │  └─ [id]
 │  │  │     ├─ ArtistClient.tsx
 │  │  │     └─ page.tsx
 │  │  ├─ layout.tsx
 │  │  ├─ login
 │  │  │  └─ page.tsx
-│  │  └─ register
-│  │     └─ page.tsx
+│  │  ├─ playlists
+│  │  │  └─ [id]
+│  │  │     ├─ page.tsx
+│  │  │     └─ PublicPlaylistClient.tsx
+│  │  ├─ register
+│  │  │  └─ page.tsx
+│  │  └─ u
+│  │     └─ [username]
+│  │        ├─ page.tsx
+│  │        └─ ProfileClient.tsx
 │  ├─ api
+│  │  ├─ admin
+│  │  │  ├─ artists
+│  │  │  │  └─ [id]
+│  │  │  │     └─ route.ts
+│  │  │  ├─ songs
+│  │  │  │  └─ [id]
+│  │  │  │     └─ route.ts
+│  │  │  └─ users
+│  │  │     └─ [id]
+│  │  │        └─ route.ts
 │  │  ├─ analytics
-│  │  ├─ artists
 │  │  │  └─ route.ts
+│  │  ├─ artists
+│  │  │  ├─ route.ts
+│  │  │  └─ [id]
+│  │  │     └─ follow
+│  │  │        └─ route.ts
 │  │  ├─ auth
 │  │  │  ├─ register
 │  │  │  │  └─ route.ts
 │  │  │  └─ [...nextauth]
 │  │  │     └─ route.ts
-│  │  ├─ events
 │  │  ├─ notifications
 │  │  │  └─ route.ts
 │  │  ├─ playlists
@@ -103,13 +175,24 @@ moozik
 │  │  │  └─ [id]
 │  │  │     ├─ comments
 │  │  │     │  └─ route.ts
+│  │  │     ├─ edit
+│  │  │     │  └─ route.ts
 │  │  │     ├─ like
 │  │  │     │  └─ route.ts
 │  │  │     ├─ play
 │  │  │     │  └─ route.ts
 │  │  │     └─ route.ts
-│  │  ├─ stripe
-│  │  └─ upload
+│  │  └─ users
+│  │     ├─ history
+│  │     │  └─ route.ts
+│  │     ├─ likes
+│  │     │  └─ route.ts
+│  │     ├─ me
+│  │     │  ├─ password
+│  │     │  │  └─ route.ts
+│  │     │  └─ route.ts
+│  │     └─ [username]
+│  │        └─ route.ts
 │  ├─ favicon.ico
 │  ├─ globals.css
 │  ├─ layout.tsx
@@ -117,12 +200,14 @@ moozik
 ├─ CLAUDE.md
 ├─ components
 │  ├─ layout
+│  │  ├─ AdminLinks.tsx
 │  │  ├─ AppShell.tsx
 │  │  ├─ Header.tsx
 │  │  ├─ MobileNav.tsx
 │  │  ├─ RightPanel.tsx
 │  │  └─ Sidebar.tsx
 │  ├─ modals
+│  │  ├─ AddToPlaylistModal.tsx
 │  │  └─ CreatePlaylistModal.tsx
 │  ├─ music
 │  │  ├─ CommentsSection.tsx
@@ -160,16 +245,21 @@ moozik
 │  ├─ Album.ts
 │  ├─ Artist.ts
 │  ├─ Comment.ts
+│  ├─ History.ts
+│  ├─ Like.ts
 │  ├─ Notification.ts
 │  ├─ Playlist.ts
 │  ├─ Song.ts
+│  ├─ StreamEvent.ts
 │  └─ User.ts
 ├─ next.config.ts
+├─ not-found.tsx
 ├─ package-lock.json
 ├─ package.json
 ├─ postcss.config.mjs
-├─ public
 ├─ README.md
+├─ scripts
+│  └─ seed.ts
 ├─ store
 │  └─ playerStore.ts
 ├─ tsconfig.json

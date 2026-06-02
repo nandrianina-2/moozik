@@ -4,6 +4,8 @@ import { connectDB } from "@/lib/db";
 import Song from "@/models/Song";
 import StreamEvent from "@/models/StreamEvent";
 import History from "@/models/History";
+import { rateLimit } from "@/lib/rateLimit";
+
 
 export async function POST(
   req: NextRequest,
@@ -11,6 +13,15 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
+
+// Au début du POST, avant connectDB :
+    const ip = req.headers.get("x-forwarded-for") ?? "unknown";
+    const { success } = rateLimit(`play:${ip}:${id}`, 5, 30_000);
+
+    if (!success) {
+      return NextResponse.json({ error: "Trop de requêtes" }, { status: 429 });
+    }
+    
     await connectDB();
 
     const song = await Song.findById(id).select("artist streamCount");

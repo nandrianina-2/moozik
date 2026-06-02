@@ -225,7 +225,7 @@ export default function AccountPage() {
     <div className="pb-32">
       <Header title="Mon compte" />
 
-      <div className="max-w-2xl mx-auto px-4 md:px-6 py-6">
+      <div className="mx-auto px-4 md:px-6 py-6">
 
         {/* Cover + Avatar */}
         <div className="relative mb-16 rounded-2xl overflow-hidden">

@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import Song from "@/models/Song";
 import Like from "@/models/Like";
+import { rateLimit } from "@/lib/rateLimit";
+
 
 export async function POST(
   _req: NextRequest,
@@ -15,6 +17,12 @@ export async function POST(
     }
 
     const { id } = await params;
+
+    const { success } = rateLimit(`like:${session.user.id}:${id}`, 3, 10_000);
+    if (!success) {
+      return NextResponse.json({ error: "Trop de requêtes" }, { status: 429 });
+    }
+
     await connectDB();
 
     const existing = await Like.findOne({

@@ -12,6 +12,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith("/forgot-password") ||
     pathname.startsWith("/reset-password") ||
     pathname.startsWith("/verify-email") ||
+    pathname.startsWith("/playlists/") ||
     pathname.startsWith("/artists/") ||
     pathname.startsWith("/albums/") ||
     pathname.startsWith("/u/") ||
