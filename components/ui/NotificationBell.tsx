@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Bell, X, Check } from "lucide-react";
-import { formatDuration } from "@/lib/utils";
-import Link from "next/link";
 
 interface Notification {
   id: string;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Music2, Search, Radio, X, ArrowRight, Check } from "lucide-react";
+import { X, ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
