@@ -9,6 +9,8 @@ import {
 import Image from "next/image";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Moozik — Streaming musical indépendant",
   description: "Découvre et écoute de la musique indépendante. Artistes, playlists, radio intelligente.",
@@ -151,7 +153,7 @@ export default async function LandingPage() {
           <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
             {artists.map((artist) => (
               <div
-                key={(artist._id as any).toString()}
+                key={String(artist._id)}
                 className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/5 transition-colors"
               >
                 <div className="w-16 h-16 rounded-full overflow-hidden bg-white/10 ring-2 ring-white/5">
