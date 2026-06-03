@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr">
+    <html lang="fr" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans bg-[#0a0a0a] text-white`}>
         <Providers>{children}</Providers>
       </body>

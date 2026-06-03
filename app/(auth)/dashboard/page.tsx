@@ -9,6 +9,8 @@ import type { Song as SongType, Artist as ArtistType } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
+import { OnboardingModal } from "@/components/ui/OnboardingModal";
+import { OnboardingWrapper } from "@/components/ui/OnboardingWrapper";
 
 function toArtist(a: any): ArtistType {
   return {
@@ -103,114 +105,118 @@ export default async function DashboardPage() {
   const artistList = artists.map(toArtist);
 
   return (
-    <div className="pb-32">
-      <Header title="Accueil" />
+    <>
+      <OnboardingWrapper />
+      <div className="pb-32">
+        <OnboardingModal />
+        <Header title="Accueil" />
 
-      <div className="px-4 md:px-6 py-6 space-y-10">
+        <div className="px-4 md:px-6 py-6 space-y-10">
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {[
-            { icon: Music2, label: "Sons",     value: totalSongs,    href: "/library" },
-            { icon: Users,  label: "Artistes", value: totalArtists,  href: "/artists" },
-            { icon: Radio,  label: "Radio",    value: "∞",           href: "/radio" },
-            { icon: Heart,  label: "Favoris",  value: userLikes,     href: "/favorites" },
-          ].map(({ icon: Icon, label, value, href }) => (
-            <Link
-              key={label}
-              href={href}
-              className="bg-white/5 rounded-xl p-4 border border-white/5 hover:bg-white/8 hover:border-purple-500/20 transition-all group"
-            >
-              <Icon size={18} className="text-purple-400 mb-2 group-hover:scale-110 transition-transform" />
-              <p className="text-xl font-bold text-white">{value}</p>
-              <p className="text-xs text-white/40 mt-0.5">{label}</p>
-            </Link>
-          ))}
-        </div>
-
-        {/* Artistes */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-semibold text-white">Artistes</h2>
-            <Link
-              href="/artists"
-              className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
-            >
-              Voir tout
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-            {artistList.map((artist) => (
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { icon: Music2, label: "Sons",     value: totalSongs,    href: "/library" },
+              { icon: Users,  label: "Artistes", value: totalArtists,  href: "/artists" },
+              { icon: Radio,  label: "Radio",    value: "∞",           href: "/radio" },
+              { icon: Heart,  label: "Favoris",  value: userLikes,     href: "/favorites" },
+            ].map(({ icon: Icon, label, value, href }) => (
               <Link
-                key={artist.id}
-                href={`/artists/${artist.id}`}
-                className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/5 transition-colors group"
+                key={label}
+                href={href}
+                className="bg-white/5 rounded-xl p-4 border border-white/5 hover:bg-white/8 hover:border-purple-500/20 transition-all group"
               >
-                <div className="w-16 h-16 rounded-full overflow-hidden bg-white/10 flex-shrink-0">
-                  {artist.image ? (
-                    <Image
-                      src={artist.image}
-                      alt={artist.name}
-                      width={64}
-                      height={64}
-                      className="object-cover w-full h-full group-hover:scale-105 transition-transform"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-white/10 flex items-center justify-center text-white/20 text-xl font-bold">
-                      {artist.name[0]}
-                    </div>
-                  )}
-                </div>
-                <div className="text-center min-w-0 w-full">
-                  <p className="text-xs font-medium text-white truncate">
-                    {artist.name}
-                  </p>
-                  {artist.isVerified && (
-                    <p className="text-[10px] text-purple-400">✓ Vérifié</p>
-                  )}
-                </div>
+                <Icon size={18} className="text-purple-400 mb-2 group-hover:scale-110 transition-transform" />
+                <p className="text-xl font-bold text-white">{value}</p>
+                <p className="text-xs text-white/40 mt-0.5">{label}</p>
               </Link>
             ))}
           </div>
-        </section>
 
-        {/* Populaires */}
-        <section>
-          <h2 className="text-base font-semibold text-white mb-4">
-            Populaires en ce moment
-          </h2>
-          <div className="flex flex-col gap-1">
-            {popular.map((song, i) => (
-              <SongRow
-                key={song.id}
-                song={song}
-                queue={popular}
-                index={i}
-                showIndex
-              />
-            ))}
-          </div>
-        </section>
+          {/* Artistes */}
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-semibold text-white">Artistes</h2>
+              <Link
+                href="/artists"
+                className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
+              >
+                Voir tout
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+              {artistList.map((artist) => (
+                <Link
+                  key={artist.id}
+                  href={`/artists/${artist.id}`}
+                  className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/5 transition-colors group"
+                >
+                  <div className="w-16 h-16 rounded-full overflow-hidden bg-white/10 flex-shrink-0">
+                    {artist.image ? (
+                      <Image
+                        src={artist.image}
+                        alt={artist.name}
+                        width={64}
+                        height={64}
+                        className="object-cover w-full h-full group-hover:scale-105 transition-transform"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-white/10 flex items-center justify-center text-white/20 text-xl font-bold">
+                        {artist.name[0]}
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-center min-w-0 w-full">
+                    <p className="text-xs font-medium text-white truncate">
+                      {artist.name}
+                    </p>
+                    {artist.isVerified && (
+                      <p className="text-[10px] text-purple-400">✓ Vérifié</p>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
 
-        {/* Nouveautés */}
-        <section>
-          <h2 className="text-base font-semibold text-white mb-4">
-            Nouveautés
-          </h2>
-          <div className="flex flex-col gap-1">
-            {songs.map((song, i) => (
-              <SongRow
-                key={song.id}
-                song={song}
-                queue={songs}
-                index={i}
-                showIndex={false}
-              />
-            ))}
-          </div>
-        </section>
+          {/* Populaires */}
+          <section>
+            <h2 className="text-base font-semibold text-white mb-4">
+              Populaires en ce moment
+            </h2>
+            <div className="flex flex-col gap-1">
+              {popular.map((song, i) => (
+                <SongRow
+                  key={song.id}
+                  song={song}
+                  queue={popular}
+                  index={i}
+                  showIndex
+                />
+              ))}
+            </div>
+          </section>
 
+          {/* Nouveautés */}
+          <section>
+            <h2 className="text-base font-semibold text-white mb-4">
+              Nouveautés
+            </h2>
+            <div className="flex flex-col gap-1">
+              {songs.map((song, i) => (
+                <SongRow
+                  key={song.id}
+                  song={song}
+                  queue={songs}
+                  index={i}
+                  showIndex={false}
+                />
+              ))}
+            </div>
+          </section>
+
+        </div>
       </div>
-    </div>
+    </>
   );
 }

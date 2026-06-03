@@ -6,9 +6,11 @@ import { cn } from "@/lib/utils";
 import {
   Home, Search, Library, Heart, Radio,
   Music2, Upload, BarChart2, Settings,
-  ChevronRight, Users, ListMusic, History, Shield
+  ChevronRight, Users, ListMusic, History, Shield, Crown
 } from "lucide-react";
 import { AdminLinks } from "./AdminLinks";
+import logo from "@/assets/logo.png";
+import Image from "next/image";
 
 
 const mainLinks = [
@@ -20,6 +22,7 @@ const mainLinks = [
   { href: "/favorites", icon: Heart,   label: "Favoris" },
   { href: "/history",   icon: History,   label: "Historique" },
   { href: "/radio",     icon: Radio,   label: "Radio" },
+  { href: "/subscription", icon: Crown, label: "Premium" },
 ];
 
 const artistLinks = [
@@ -78,7 +81,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-4 py-5 border-b border-white/5">
         <div className="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center flex-shrink-0">
-          <Music2 size={16} className="text-white" />
+          <Image src={logo} alt="Moozik" width={32} height={32} />
         </div>
         <span className="text-lg font-bold tracking-tight">Moozik</span>
       </div>
