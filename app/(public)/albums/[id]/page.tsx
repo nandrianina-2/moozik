@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import type { Song as SongType, Artist as ArtistType } from "@/types";
 import { formatDuration } from "@/lib/utils";
 import { AlbumClient } from "./AlbumClient";
+import Image from "next/image";
 
 function toArtist(a: any): ArtistType {
   return {
@@ -86,10 +87,12 @@ export default async function AlbumPage(
         <div className="flex gap-5 items-end">
           <div className="w-36 h-36 md:w-44 md:h-44 rounded-xl overflow-hidden bg-white/5 flex-shrink-0 shadow-2xl">
             {data.coverUrl ? (
-              <img
+              <Image
                 src={data.coverUrl}
                 alt={data.title}
-                className="w-full h-full object-cover"
+                width={176}
+                height={176}
+                className="object-cover w-full h-full"
               />
             ) : (
               <div className="w-full h-full bg-white/10" />

@@ -7,6 +7,7 @@ import { ArtistClient } from "./ArtistClient";
 import type { Song as SongType, Artist as ArtistType } from "@/types";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import Image from "next/image";
 
 function toArtist(a: any): ArtistType {
   return {
@@ -88,10 +89,11 @@ export default async function ArtistPage(
       {/* Cover */}
       <div className="relative h-52 md:h-64 overflow-hidden">
         {artist.coverImage ? (
-          <img
+          <Image
             src={artist.coverImage}
             alt={artist.name}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-purple-900/60 to-black" />
@@ -104,11 +106,13 @@ export default async function ArtistPage(
         <div className="flex items-end gap-4 mb-6">
           <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#0a0a0a] bg-white/10 flex-shrink-0">
             {artist.image ? (
-              <img
-                src={artist.image}
-                alt={artist.name}
-                className="w-full h-full object-cover"
-              />
+              <Image
+              src={artist.image}
+              alt={artist.name}
+              width={96}
+              height={96}
+              className="object-cover w-full h-full"
+            />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-white/20">
                 {artist.name[0]}

@@ -16,6 +16,7 @@ import Link from "next/link";
 import { formatCount } from "@/lib/utils";
 import type { Song as SongType, Artist as ArtistType } from "@/types";
 import { SongRow } from "@/components/music/SongRow";
+import Image from "next/image";
 
 function toArtistType(a: any): ArtistType {
   return {
@@ -149,11 +150,7 @@ export default async function UserProfilePage(
       {/* Cover */}
       <div className="relative h-48 md:h-56 overflow-hidden">
         {profile.coverImage ? (
-          <img
-            src={profile.coverImage}
-            alt="Cover"
-            className="w-full h-full object-cover"
-          />
+          <Image src={profile.coverImage} alt="Cover" fill className="object-cover" />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-purple-900/60 via-purple-800/30 to-black" />
         )}
@@ -166,11 +163,7 @@ export default async function UserProfilePage(
         <div className="flex items-end gap-4 mb-4">
           <div className="w-24 h-24 rounded-full border-4 border-[#0a0a0a] bg-purple-600/20 overflow-hidden flex-shrink-0 shadow-xl">
             {profile.image ? (
-              <img
-                src={profile.image}
-                alt={profile.name}
-                className="w-full h-full object-cover"
-              />
+              <Image src={profile.image} alt={profile.name} fill className="object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-purple-400">
                 {profile.name[0]?.toUpperCase()}

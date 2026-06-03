@@ -3,10 +3,11 @@ import mongoose, { Schema, type Document, type Model } from "mongoose";
 export interface IUser extends Document {
   name: string;
   email: string;
-  username?: string;   // add
+  username?: string;
   password?: string;
   image?: string;
-  bio?: string;        // add
+  coverImage?: string;
+  bio?: string;
   role: "user" | "artist" | "admin";
   isPremium: boolean;
   premiumUntil?: Date;
@@ -16,14 +17,13 @@ export interface IUser extends Document {
   resetToken?: string;
   resetTokenExpiry?: Date;
   following: mongoose.Types.ObjectId[];
+  socialLinks?: {
+    instagram?: string;
+    twitter?: string;
+    website?: string;
+  };
   createdAt: Date;
   updatedAt: Date;
-  coverImage:  { type: String },
-  socialLinks: {
-    instagram: { type: String },
-    twitter:   { type: String },
-    website:   { type: String },
-  },
 }
 
 const UserSchema = new Schema<IUser>(
@@ -33,6 +33,8 @@ const UserSchema = new Schema<IUser>(
     username:         { type: String, unique: true, sparse: true, lowercase: true, trim: true },
     password:         { type: String, select: false },
     image:            { type: String },
+    coverImage:       { type: String },
+    bio:              { type: String, maxlength: 300 },
     role:             { type: String, enum: ["user", "artist", "admin"], default: "user" },
     isPremium:        { type: Boolean, default: false },
     premiumUntil:     { type: Date },
@@ -42,7 +44,11 @@ const UserSchema = new Schema<IUser>(
     resetToken:       { type: String },
     resetTokenExpiry: { type: Date },
     following:        [{ type: Schema.Types.ObjectId, ref: "Artist" }],
-    bio:              { type: String, maxlength: 300 },
+    socialLinks: {
+      instagram: String,
+      twitter:   String,
+      website:   String,
+    },
   },
   { timestamps: true }
 );
