@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePlayerStore } from "@/store/playerStore";
 import { getAudioEngine } from "@/lib/audioEngine";
 import { cn } from "@/lib/utils";
@@ -11,15 +11,13 @@ interface Props {
 }
 
 export function Waveform({ audioUrl, className }: Props) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { progress, duration, isPlaying } = usePlayerStore();
+  const { progress, duration } = usePlayerStore();
   const [bars, setBars] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Génère les barres de la waveform
   useEffect(() => {
     let cancelled = false;
-
     async function generateWaveform() {
       setLoading(true);
       try {
@@ -28,14 +26,11 @@ export function Waveform({ audioUrl, className }: Props) {
         const buffer = await res.arrayBuffer();
         const decoded = await ctx.decodeAudioData(buffer);
         ctx.close();
-
         if (cancelled) return;
-
         const data = decoded.getChannelData(0);
         const samples = 80;
         const blockSize = Math.floor(data.length / samples);
         const generated: number[] = [];
-
         for (let i = 0; i < samples; i++) {
           let sum = 0;
           for (let j = 0; j < blockSize; j++) {
@@ -43,7 +38,6 @@ export function Waveform({ audioUrl, className }: Props) {
           }
           generated.push(sum / blockSize);
         }
-
         // Normalise entre 0.1 et 1
         const max = Math.max(...generated);
         setBars(generated.map((v) => Math.max(0.1, v / max)));
@@ -58,7 +52,6 @@ export function Waveform({ audioUrl, className }: Props) {
         if (!cancelled) setLoading(false);
       }
     }
-
     generateWaveform();
     return () => { cancelled = true; };
   }, [audioUrl]);
@@ -97,7 +90,6 @@ export function Waveform({ audioUrl, className }: Props) {
       {bars.map((height, i) => {
         const barPercent = i / bars.length;
         const isPlayed = barPercent < percent;
-
         return (
           <div
             key={i}

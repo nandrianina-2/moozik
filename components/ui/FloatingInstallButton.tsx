@@ -4,26 +4,28 @@ import { useState, useEffect } from "react";
 import { Download, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => void;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
+
 export function FloatingInstallButton() {
-  const [prompt, setPrompt] = useState<any>(null);
+  const [prompt, setPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
   const [installed, setInstalled] = useState(false);
 
   useEffect(() => {
     function handlePrompt(e: Event) {
       e.preventDefault();
-      setPrompt(e);
+      setPrompt(e as BeforeInstallPromptEvent);
       setVisible(true);
     }
-
     function handleInstalled() {
       setInstalled(true);
       setVisible(false);
     }
-
     window.addEventListener("beforeinstallprompt", handlePrompt);
     window.addEventListener("appinstalled", handleInstalled);
-
     return () => {
       window.removeEventListener("beforeinstallprompt", handlePrompt);
       window.removeEventListener("appinstalled", handleInstalled);
@@ -54,7 +56,7 @@ export function FloatingInstallButton() {
       </div>
       <div className="min-w-0">
         <p className="text-sm font-semibold text-white">Installer Moozik</p>
-        <p className="text-xs text-white/40">Accès rapide depuis l'écran d'accueil</p>
+        <p className="text-xs text-white/40">Accès rapide depuis l&apos;écran d&apos;accueil</p>
       </div>
       <div className="flex items-center gap-2 ml-2">
         <button

@@ -140,7 +140,7 @@ export function OnboardingModal() {
               onClick={handleNext}
             >
               {step === STEPS.length - 1 ? (
-                <><Check size={15} /> C'est parti !</>
+                <><Check size={15} /> C&apos;est parti !</>
               ) : (
                 <>Suivant <ArrowRight size={15} /></>
               )}

@@ -6,13 +6,13 @@ import { formatDuration } from "@/lib/utils";
 import Image from "next/image";
 
 export function QueuePanel() {
-  const { queue, currentSong, removeFromQueue, playSong } = usePlayerStore();
+  const { queue, removeFromQueue, playSong } = usePlayerStore();
 
   if (queue.length === 0) {
     return (
       <div className="flex flex-col items-center gap-2 py-6 text-center">
         <Music2 size={24} className="text-white/20" />
-        <p className="text-white/30 text-sm">File d'attente vide</p>
+        <p className="text-white/30 text-sm">File d&apos;attente vide</p>
       </div>
     );
   }
