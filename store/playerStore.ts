@@ -15,7 +15,10 @@ interface PlayerState {
   duration: number;
   shuffle: boolean;
   repeat: RepeatMode;
-
+  crossfade: boolean;
+  crossfadeDuration: number;
+  
+  setCrossfade: (enabled: boolean, duration?: number) => void;
   playSong: (song: Song, queue?: Song[]) => void;
   togglePlay: () => void;
   playNext: () => void;
@@ -47,6 +50,8 @@ export const usePlayerStore = create<PlayerState>()(
     duration: 0,
     shuffle: false,
     repeat: "off",
+    crossfade: true,
+    crossfadeDuration: 3,
 
     playSong: (song, queue) =>
       set((s) => {
@@ -149,5 +154,14 @@ export const usePlayerStore = create<PlayerState>()(
 
     clearQueue: () =>
       set((s) => { s.queue = []; s.originalQueue = []; }),
+
+    setCrossfade: (enabled, duration = 3) =>
+      set((s) => {
+        s.crossfade         = enabled;
+        s.crossfadeDuration = duration;
+      }),
+
   }))
+
+
 );

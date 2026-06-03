@@ -3,33 +3,38 @@
 import { useState, useEffect } from "react";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, BarChart, Bar, Cell,
+  ResponsiveContainer, BarChart, Bar,
 } from "recharts";
-import { TrendingUp, Heart, Music2, Eye } from "lucide-react";
+import { TrendingUp, Heart, Music2, Euro, Calendar } from "lucide-react";
 import { formatCount, cn } from "@/lib/utils";
 
 type Period = "7d" | "30d" | "90d";
 
 interface AnalyticsData {
-  period: string;
-  totalStreams: number;
-  totalLikes: number;
-  totalSongs: number;
-  streamsByDay: { date: string; streams: number }[];
-  topSongs: { title: string; streams: number }[];
-  allSongs: { id: string; title: string; streamCount: number; likesCount: number }[];
+  period:            string;
+  totalStreams:       number;
+  totalLikes:        number;
+  totalSongs:        number;
+  estimatedRevenue:  number;
+  monthlyProjected:  number;
+  streamsByDay:      { date: string; streams: number; revenue: number }[];
+  topSongs:          { title: string; streams: number }[];
+  allSongs: {
+    id:          string;
+    title:       string;
+    streamCount: number;
+    likesCount:  number;
+    revenue:     number;
+  }[];
 }
 
-const PERIOD_LABELS: Record<Period, string> = {
-  "7d": "7 derniers jours",
-  "30d": "30 derniers jours",
-  "90d": "90 derniers jours",
-};
+type ChartView = "streams" | "revenue";
 
 export function AnalyticsClient() {
-  const [period, setPeriod] = useState<Period>("7d");
-  const [data, setData] = useState<AnalyticsData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [period, setPeriod]     = useState<Period>("7d");
+  const [data, setData]         = useState<AnalyticsData | null>(null);
+  const [loading, setLoading]   = useState(true);
+  const [chartView, setChartView] = useState<ChartView>("streams");
 
   useEffect(() => {
     setLoading(true);
@@ -38,15 +43,20 @@ export function AnalyticsClient() {
       .then((d) => { setData(d); setLoading(false); });
   }, [period]);
 
-  // Tooltip custom
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null;
     return (
       <div className="bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2 shadow-xl">
         <p className="text-xs text-white/40 mb-1">{label}</p>
-        <p className="text-sm font-semibold text-purple-400">
-          {payload[0].value} streams
-        </p>
+        {chartView === "streams" ? (
+          <p className="text-sm font-semibold text-purple-400">
+            {payload[0].value} streams
+          </p>
+        ) : (
+          <p className="text-sm font-semibold text-green-400">
+            {payload[0].value?.toFixed(4)} €
+          </p>
+        )}
       </div>
     );
   };
@@ -54,7 +64,7 @@ export function AnalyticsClient() {
   if (loading) {
     return (
       <div className="px-4 md:px-6 py-6 space-y-4">
-        {[1, 2, 3].map((i) => (
+        {[1, 2, 3, 4].map((i) => (
           <div key={i} className="h-32 rounded-xl bg-white/5 animate-pulse" />
         ))}
       </div>
@@ -63,7 +73,13 @@ export function AnalyticsClient() {
 
   if (!data) return null;
 
-  const maxStream = Math.max(...(data.topSongs.map((s) => s.streams)), 1);
+  const maxStream = Math.max(...data.topSongs.map((s) => s.streams), 1);
+
+  const PERIOD_LABELS: Record<Period, string> = {
+    "7d":  "7 derniers jours",
+    "30d": "30 derniers jours",
+    "90d": "90 derniers jours",
+  };
 
   return (
     <div className="px-4 md:px-6 py-6 space-y-6">
@@ -87,12 +103,41 @@ export function AnalyticsClient() {
       </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { icon: TrendingUp, label: "Streams",  value: formatCount(data.totalStreams), color: "text-purple-400", bg: "bg-purple-500/10" },
-          { icon: Heart,      label: "Likes",    value: formatCount(data.totalLikes),  color: "text-pink-400",   bg: "bg-pink-500/10" },
-          { icon: Music2,     label: "Sons",     value: data.totalSongs,               color: "text-blue-400",   bg: "bg-blue-500/10" },
-        ].map(({ icon: Icon, label, value, color, bg }) => (
+          {
+            icon:  TrendingUp,
+            label: "Streams",
+            value: formatCount(data.totalStreams),
+            sub:   PERIOD_LABELS[period],
+            color: "text-purple-400",
+            bg:    "bg-purple-500/10",
+          },
+          {
+            icon:  Heart,
+            label: "Likes",
+            value: formatCount(data.totalLikes),
+            sub:   PERIOD_LABELS[period],
+            color: "text-pink-400",
+            bg:    "bg-pink-500/10",
+          },
+          {
+            icon:  Euro,
+            label: "Revenus estimés",
+            value: `${data.estimatedRevenue.toFixed(2)} €`,
+            sub:   PERIOD_LABELS[period],
+            color: "text-green-400",
+            bg:    "bg-green-500/10",
+          },
+          {
+            icon:  Calendar,
+            label: "Projection mensuelle",
+            value: `${data.monthlyProjected.toFixed(2)} €`,
+            sub:   "Estimation × 30 jours",
+            color: "text-yellow-400",
+            bg:    "bg-yellow-500/10",
+          },
+        ].map(({ icon: Icon, label, value, sub, color, bg }) => (
           <div
             key={label}
             className="bg-white/5 rounded-xl p-4 border border-white/5"
@@ -100,30 +145,69 @@ export function AnalyticsClient() {
             <div className={`w-9 h-9 rounded-lg ${bg} flex items-center justify-center mb-3`}>
               <Icon size={18} className={color} />
             </div>
-            <p className="text-2xl font-bold text-white">{value}</p>
-            <p className="text-xs text-white/40 mt-0.5">
-              {label} · {PERIOD_LABELS[period]}
-            </p>
+            <p className="text-xl font-bold text-white">{value}</p>
+            <p className="text-xs text-white/40 mt-0.5">{label}</p>
+            <p className="text-[10px] text-white/20 mt-0.5">{sub}</p>
           </div>
         ))}
       </div>
 
-      {/* Graphique streams par jour */}
+      {/* Note sur les revenus */}
+      <div className="flex items-start gap-2 p-3 rounded-xl bg-yellow-500/5 border border-yellow-500/10">
+        <Euro size={14} className="text-yellow-400 flex-shrink-0 mt-0.5" />
+        <p className="text-xs text-yellow-400/70 leading-relaxed">
+          Revenus estimés basés sur 0,4 ct/stream Premium et 0,1 ct/stream gratuit.
+          Les vrais revenus dépendent de ton contrat et du pays d'écoute.
+        </p>
+      </div>
+
+      {/* Graphique */}
       <div className="bg-white/5 rounded-xl border border-white/5 p-4">
-        <h2 className="text-sm font-semibold text-white mb-4">
-          Streams par jour
-        </h2>
+        {/* Toggle streams / revenus */}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-semibold text-white">
+            {chartView === "streams" ? "Streams par jour" : "Revenus par jour"}
+          </h2>
+          <div className="flex gap-1 bg-white/5 rounded-lg p-0.5">
+            {([
+              { id: "streams", label: "Streams" },
+              { id: "revenue", label: "Revenus" },
+            ] as const).map(({ id, label }) => (
+              <button
+                key={id}
+                onClick={() => setChartView(id)}
+                className={cn(
+                  "px-2.5 py-1 rounded-md text-xs font-medium transition-all",
+                  chartView === id
+                    ? "bg-white/10 text-white"
+                    : "text-white/40 hover:text-white/60"
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {data.streamsByDay.every((d) => d.streams === 0) ? (
           <div className="flex items-center justify-center h-32 text-white/30 text-sm">
-            Aucun stream sur cette période
+            Aucune donnée sur cette période
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={180}>
             <AreaChart data={data.streamsByDay}>
               <defs>
-                <linearGradient id="streamGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor="#7c3aed" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
+                <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor={chartView === "streams" ? "#7c3aed" : "#22c55e"}
+                    stopOpacity={0.3}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor={chartView === "streams" ? "#7c3aed" : "#22c55e"}
+                    stopOpacity={0}
+                  />
                 </linearGradient>
               </defs>
               <XAxis
@@ -140,15 +224,18 @@ export function AnalyticsClient() {
                 tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }}
                 tickLine={false}
                 axisLine={false}
-                width={30}
+                width={35}
+                tickFormatter={(v) =>
+                  chartView === "revenue" ? `${v.toFixed(2)}€` : v
+                }
               />
               <Tooltip content={<CustomTooltip />} />
               <Area
                 type="monotone"
-                dataKey="streams"
-                stroke="#7c3aed"
+                dataKey={chartView === "streams" ? "streams" : "revenue"}
+                stroke={chartView === "streams" ? "#7c3aed" : "#22c55e"}
                 strokeWidth={2}
-                fill="url(#streamGrad)"
+                fill="url(#grad)"
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -169,7 +256,7 @@ export function AnalyticsClient() {
                     {song.title}
                   </p>
                   <span className="text-xs text-white/40 flex-shrink-0">
-                    {formatCount(song.streams)}
+                    {formatCount(song.streams)} streams
                   </span>
                 </div>
                 <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
@@ -184,21 +271,31 @@ export function AnalyticsClient() {
         </div>
       )}
 
-      {/* Tous les sons */}
+      {/* Tous les sons avec revenus */}
       <div className="bg-white/5 rounded-xl border border-white/5 overflow-hidden">
-        <div className="px-4 py-3 border-b border-white/5">
-          <h2 className="text-sm font-semibold text-white">Tous mes sons</h2>
+        <div className="px-4 py-3 border-b border-white/5 flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-white">
+            Tous mes sons
+          </h2>
+          <p className="text-xs text-white/30">
+            Total revenus :{" "}
+            <span className="text-green-400 font-medium">
+              {data.allSongs
+                .reduce((a, s) => a + s.revenue, 0)
+                .toFixed(2)} €
+            </span>
+          </p>
         </div>
         {data.allSongs.map((song) => (
           <div
             key={song.id}
-            className="flex items-center gap-3 px-4 py-3 border-b border-white/5 last:border-0"
+            className="flex items-center gap-3 px-4 py-3 border-b border-white/5 last:border-0 hover:bg-white/3 transition-colors"
           >
             <div className="w-8 h-8 rounded-lg bg-purple-600/20 flex items-center justify-center flex-shrink-0">
               <Music2 size={14} className="text-purple-400" />
             </div>
             <p className="text-sm text-white flex-1 truncate">{song.title}</p>
-            <div className="flex items-center gap-3 text-xs text-white/30">
+            <div className="flex items-center gap-4 text-xs text-white/30">
               <span className="flex items-center gap-1">
                 <TrendingUp size={11} className="text-purple-400" />
                 {formatCount(song.streamCount)}
@@ -206,6 +303,10 @@ export function AnalyticsClient() {
               <span className="flex items-center gap-1">
                 <Heart size={11} className="text-pink-400" />
                 {formatCount(song.likesCount)}
+              </span>
+              <span className="flex items-center gap-1 text-green-400">
+                <Euro size={11} />
+                {song.revenue.toFixed(2)}
               </span>
             </div>
           </div>

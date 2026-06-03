@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ListMusic, MessageCircle, Info } from "lucide-react";
+import { ChevronLeft, ListMusic, MessageCircle, Info, Settings2 } from "lucide-react";
 import { usePlayerStore } from "@/store/playerStore";
 import { PlayerControls } from "./PlayerControls";
 import { ProgressBar } from "./ProgressBar";
@@ -16,8 +16,9 @@ import { FloatingComments } from "./FloatingComments";
 import { cn } from "@/lib/utils";
 import { Waveform } from "./Waveform";
 import { formatDuration } from "@/lib/utils";
+import { EQPanel } from "./panels/EQPanel";
 
-type Panel = "infos" | "comments" | "queue";
+type Panel = "infos" | "comments" | "eq" | "queue";
 
 export function FullPlayerPage() {
   const router = useRouter();
@@ -33,6 +34,7 @@ export function FullPlayerPage() {
   const tabs: { id: Panel; icon: typeof Info; label: string }[] = [
     { id: "infos",    icon: Info,          label: "Infos" },
     { id: "comments", icon: MessageCircle, label: "Commentaires" },
+    { id: "eq",       icon: Settings2,     label: "EQ" },
     { id: "queue",    icon: ListMusic,     label: "File" },
   ];
 
@@ -151,8 +153,9 @@ export function FullPlayerPage() {
 
         {/* Panel */}
         <div className="flex-1 overflow-y-auto px-5 pb-10">
-          {activePanel === "infos"    && <InfosPanel song={currentSong} />}
           {activePanel === "comments" && <CommentsPanel songId={currentSong.id} />}
+          {activePanel === "eq" && <EQPanel />}
+          {activePanel === "infos"    && <InfosPanel song={currentSong} />}
         </div>
       </div>
 
@@ -254,8 +257,9 @@ export function FullPlayerPage() {
 
           {/* Contenu */}
           <div className="flex-1 overflow-y-auto pr-1">
-            {activePanel === "infos"    && <InfosPanel song={currentSong} />}
             {activePanel === "comments" && <CommentsPanel songId={currentSong.id} />}
+            {activePanel === "eq" && <EQPanel />}
+            {activePanel === "infos"    && <InfosPanel song={currentSong} />}
           </div>
         </div>
       </div>
