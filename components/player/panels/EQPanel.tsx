@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { getAudioEngine, EQ_PRESETS, DEFAULT_EQ_BANDS } from "@/lib/audioEngine";
+import { useState } from "react";
+import { EQ_PRESETS, DEFAULT_EQ_BANDS } from "@/lib/audioEngine";
 import { cn } from "@/lib/utils";
 
-const BAND_LABELS = ["60Hz", "250Hz", "1kHz", "4kHz", "16kHz"];
+const BAND_LABELS  = ["60Hz", "250Hz", "1kHz", "4kHz", "16kHz"];
 const PRESET_LABELS: Record<string, string> = {
   flat:       "Flat",
   bass:       "Bass Boost",
@@ -17,15 +17,14 @@ const PRESET_LABELS: Record<string, string> = {
 };
 
 export function EQPanel() {
-  const [gains, setGains] = useState<number[]>(
-    DEFAULT_EQ_BANDS.map((b) => b.gain)
-  );
+  const [gains, setGains]           = useState<number[]>(DEFAULT_EQ_BANDS.map((b) => b.gain));
   const [activePreset, setActivePreset] = useState("flat");
-  const [crossfade, setCrossfade] = useState(true);
+  const [crossfade, setCrossfade]   = useState(false);
   const [crossfadeDur, setCrossfadeDur] = useState(3);
 
   function handleBandChange(index: number, value: number) {
     try {
+      const { getAudioEngine } = require("@/lib/audioEngine");
       getAudioEngine().setEQBand(index, value);
     } catch {}
     setGains((prev) => {
@@ -38,23 +37,21 @@ export function EQPanel() {
 
   function handlePreset(name: string) {
     try {
+      const { getAudioEngine } = require("@/lib/audioEngine");
       const newGains = getAudioEngine().applyPreset(name);
       if (newGains) setGains([...newGains]);
     } catch {
-      const gains = EQ_PRESETS[name];
-      if (gains) setGains([...gains]);
+      const g = EQ_PRESETS[name];
+      if (g) setGains([...g]);
     }
     setActivePreset(name);
-  }
-
-  function handleReset() {
-    handlePreset("flat");
   }
 
   function handleCrossfadeToggle() {
     const next = !crossfade;
     setCrossfade(next);
     try {
+      const { getAudioEngine } = require("@/lib/audioEngine");
       getAudioEngine().setCrossfade(next, crossfadeDur);
     } catch {}
   }
@@ -62,6 +59,7 @@ export function EQPanel() {
   function handleCrossfadeDur(v: number) {
     setCrossfadeDur(v);
     try {
+      const { getAudioEngine } = require("@/lib/audioEngine");
       getAudioEngine().setCrossfade(crossfade, v);
     } catch {}
   }
@@ -99,22 +97,19 @@ export function EQPanel() {
             Égaliseur
           </p>
           <button
-            onClick={handleReset}
+            onClick={() => handlePreset("flat")}
             className="text-xs text-white/30 hover:text-white/60 transition-colors"
           >
             Réinitialiser
           </button>
         </div>
 
-        <div className="flex items-end gap-3 h-32 px-1">
+        <div className="flex items-end gap-3 h-36 px-1">
           {BAND_LABELS.map((label, i) => (
             <div key={label} className="flex-1 flex flex-col items-center gap-1.5">
-              {/* Valeur */}
               <span className="text-[10px] text-white/40 tabular-nums">
                 {gains[i] > 0 ? "+" : ""}{gains[i].toFixed(0)}
               </span>
-
-              {/* Slider vertical */}
               <div className="relative flex-1 w-full flex items-center justify-center">
                 <input
                   type="range"
@@ -128,13 +123,11 @@ export function EQPanel() {
                     writingMode: "vertical-lr" as any,
                     direction:   "rtl",
                     width:       "100%",
-                    height:      "80px",
+                    height:      "90px",
                   }}
                 />
               </div>
-
-              {/* Label freq */}
-              <span className="text-[9px] text-white/30 text-center leading-tight">
+              <span className="text-[9px] text-white/30 text-center">
                 {label}
               </span>
             </div>
@@ -148,13 +141,10 @@ export function EQPanel() {
           Crossfade
         </p>
 
-        {/* Toggle */}
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-white">Transition douce</p>
-            <p className="text-xs text-white/40">
-              Fondu enchaîné entre les sons
-            </p>
+            <p className="text-xs text-white/40">Fondu entre les sons</p>
           </div>
           <button
             onClick={handleCrossfadeToggle}
@@ -170,14 +160,11 @@ export function EQPanel() {
           </button>
         </div>
 
-        {/* Durée crossfade */}
         {crossfade && (
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
+            <div className="flex justify-between">
               <p className="text-xs text-white/50">Durée</p>
-              <p className="text-xs text-purple-400 font-medium">
-                {crossfadeDur}s
-              </p>
+              <p className="text-xs text-purple-400 font-medium">{crossfadeDur}s</p>
             </div>
             <input
               type="range"

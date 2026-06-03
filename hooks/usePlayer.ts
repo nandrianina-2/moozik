@@ -5,45 +5,49 @@ import { usePlayerStore } from "@/store/playerStore";
 import { getAudioEngine } from "@/lib/audioEngine";
 
 export function usePlayer() {
-  const store = usePlayerStore();
-  const engineRef = useRef<ReturnType<typeof getAudioEngine> | null>(null);
+  const {
+    currentSong,
+    isPlaying,
+    volume,
+    isMuted,
+  } = usePlayerStore();
 
+  const engineReady = useRef(false);
+  const lastSongId  = useRef<string | null>(null);
+
+  // Init engine une seule fois côté client
   useEffect(() => {
-    engineRef.current = getAudioEngine();
+    engineReady.current = true;
   }, []);
 
-  // Démarre la lecture quand le son change
+  // Changement de son
   useEffect(() => {
-    if (!store.currentSong) return;
-    engineRef.current?.play(store.currentSong.audioUrl);
+    if (!engineReady.current || !currentSong) return;
+    if (lastSongId.current === currentSong.id) return;
 
-    // Vérifie si le son est liké par l'utilisateur
-    fetch(`/api/songs/${store.currentSong.id}/like`)
-      .then((r) => r.json())
-      .then((d) => store.setLiked(d.liked ?? false))
-      .catch(() => {});
-  }, [store.currentSong?.id]);
+    lastSongId.current = currentSong.id;
+    getAudioEngine().play(currentSong.audioUrl);
+  }, [currentSong?.id]);
 
+  // Play / Pause
   useEffect(() => {
-    if (!engineRef.current) return;
-    if (store.isPlaying) {
-      engineRef.current.resume();
+    if (!engineReady.current || !currentSong) return;
+    if (isPlaying) {
+      getAudioEngine().resume();
     } else {
-      engineRef.current.pause();
+      getAudioEngine().pause();
     }
-  }, [store.isPlaying]);
+  }, [isPlaying]);
 
+  // Volume
   useEffect(() => {
-    engineRef.current?.setVolume(store.volume);
-  }, [store.volume]);
+    if (!engineReady.current) return;
+    getAudioEngine().setVolume(volume);
+  }, [volume]);
 
+  // Mute
   useEffect(() => {
-    engineRef.current?.setMuted(store.isMuted);
-  }, [store.isMuted]);
-
-  function seek(seconds: number) {
-    engineRef.current?.seek(seconds);
-  }
-
-  return { ...store, seek };
+    if (!engineReady.current) return;
+    getAudioEngine().setMuted(isMuted);
+  }, [isMuted]);
 }
