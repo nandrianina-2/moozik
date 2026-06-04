@@ -7,6 +7,7 @@ import { usePlayerStore } from "@/store/playerStore";
 import { formatDuration, formatCount, cn } from "@/lib/utils";
 import { AddToPlaylistModal } from "@/components/modals/AddToPlaylistModal";
 import type { Song } from "@/types";
+import { optimizeImage } from "@/lib/cloudinary";
 
 interface SongRowProps {
   song: Song;
@@ -96,7 +97,7 @@ export function SongRow({
         <div className="w-10 h-10 rounded-md overflow-hidden bg-white/5 flex-shrink-0">
           {song.coverUrl ? (
             <Image
-              src={song.coverUrl}
+              src={optimizeImage(song.coverUrl, { width: 40, height: 40 })}
               alt={song.title}
               width={40}
               height={40}

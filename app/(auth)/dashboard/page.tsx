@@ -11,6 +11,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { OnboardingModal } from "@/components/ui/OnboardingModal";
 import { OnboardingWrapper } from "@/components/ui/OnboardingWrapper";
+import { getAvatarUrl } from "@/lib/cloudinary";
 
 function toArtist(a: any): ArtistType {
   return {
@@ -154,7 +155,7 @@ export default async function DashboardPage() {
                   <div className="w-16 h-16 rounded-full overflow-hidden bg-white/10 flex-shrink-0">
                     {artist.image ? (
                       <Image
-                        src={artist.image}
+                        src={getAvatarUrl(artist.image, 64)}
                         alt={artist.name}
                         width={64}
                         height={64}

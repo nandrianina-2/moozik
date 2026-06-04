@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { getAudioEngine } from "@/lib/audioEngine";
 import { formatDuration } from "@/lib/utils";
+import { optimizeImage } from "@/lib/cloudinary";
 
 export function MiniPlayer() {
   usePlayer();
@@ -67,7 +68,7 @@ export function MiniPlayer() {
           <div className="w-11 h-11 rounded-lg overflow-hidden bg-white/5 flex-shrink-0 shadow-lg">
             {currentSong.coverUrl ? (
               <Image
-                src={currentSong.coverUrl}
+                src={optimizeImage(currentSong.coverUrl, { width: 44, height: 44 })}
                 alt={currentSong.title}
                 width={44}
                 height={44}

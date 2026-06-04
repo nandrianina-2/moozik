@@ -57,6 +57,15 @@ export default function AccountPage() {
   const [passMsg, setPassMsg] = useState("");
   const { user: sessionUser } = useCurrentUser();
 
+  const [notifSettings, setNotifSettings] = useState({
+    followers: true,
+    likes:     true,
+    comments:  true,
+    newSongs:  true,
+    push:      false,
+  });
+  const [notifLoading, setNotifLoading] = useState(false);
+
   useEffect(() => {
     fetch("/api/users/me")
       .then((r) => r.json())
@@ -75,6 +84,12 @@ export default function AccountPage() {
         setLoading(false);
       });
   }, []);
+
+  fetch("/api/users/settings")
+    .then((r) => r.json())
+    .then((d) => {
+      if (d.notifications) setNotifSettings(d.notifications);
+    });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
@@ -117,6 +132,16 @@ export default function AccountPage() {
       setAvatarUploading(false);
     }
   }, []);
+
+  async function handleToggleNotif(key: keyof typeof notifSettings) {
+    const next = { ...notifSettings, [key]: !notifSettings[key] };
+    setNotifSettings(next);
+    await fetch("/api/users/settings", {
+      method:  "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ notifications: next }),
+    });
+  }
 
   const { getRootProps: getAvatarProps, getInputProps: getAvatarInput } =
     useDropzone({
@@ -567,28 +592,37 @@ export default function AccountPage() {
               Préférences de notifications
             </h3>
             {[
-              { label: "Nouveaux followers",    desc: "Quand quelqu'un te suit" },
-              { label: "Likes sur tes sons",    desc: "Quand quelqu'un like ton contenu" },
-              { label: "Commentaires",          desc: "Nouveaux commentaires sur tes sons" },
-              { label: "Nouvelles sorties",     desc: "Artistes que tu suis" },
-              { label: "Notifications push",    desc: "Sur mobile et bureau" },
-            ].map(({ label, desc }) => (
-              <div
-                key={label}
-                className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5"
-              >
-                <div>
-                  <p className="text-sm font-medium text-white">{label}</p>
-                  <p className="text-xs text-white/40">{desc}</p>
-                </div>
-                <button
-                  className="relative w-10 h-5 rounded-full bg-purple-600 transition-colors"
-                  aria-label={`Toggle ${label}`}
+              { key: "followers", label: "Nouveaux followers",   desc: "Quand quelqu'un te suit" },
+              { key: "likes",     label: "Likes sur tes sons",   desc: "Quand quelqu'un like ton contenu" },
+              { key: "comments",  label: "Commentaires",         desc: "Nouveaux commentaires" },
+              { key: "newSongs",  label: "Nouvelles sorties",    desc: "Artistes que tu suis" },
+              { key: "push",      label: "Notifications push",   desc: "Sur mobile et bureau" },
+            ].map(({ key, label, desc }) => {
+              const k = key as keyof typeof notifSettings;
+              return (
+                <div
+                  key={key}
+                  className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5"
                 >
-                  <span className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-white" />
-                </button>
-              </div>
-            ))}
+                  <div>
+                    <p className="text-sm font-medium text-white">{label}</p>
+                    <p className="text-xs text-white/40">{desc}</p>
+                  </div>
+                  <button
+                    onClick={() => handleToggleNotif(k)}
+                    className={cn(
+                      "relative w-10 h-5 rounded-full transition-colors",
+                      notifSettings[k] ? "bg-purple-600" : "bg-white/20"
+                    )}
+                  >
+                    <span className={cn(
+                      "absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform",
+                      notifSettings[k] ? "translate-x-5" : "translate-x-0"
+                    )} />
+                  </button>
+                </div>
+              );
+            })}
           </div>
         )}
 
