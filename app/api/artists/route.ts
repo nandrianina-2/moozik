@@ -7,8 +7,6 @@ export async function GET(req: NextRequest) {
     await connectDB();
 
     const { searchParams } = req.nextUrl;
-    const page = parseInt(searchParams.get("page") ?? "1");
-    const limit = parseInt(searchParams.get("limit") ?? "20");
     const search = searchParams.get("q");
 
     const filter: Record<string, any> = {};
@@ -16,14 +14,19 @@ export async function GET(req: NextRequest) {
 
     const artists = await Artist.find(filter)
       .sort({ followersCount: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
+      .limit(50)
       .lean();
 
     return NextResponse.json({
       artists: artists.map((a) => ({
-        ...a,
-        id: a._id.toString(),
+        id:         (a._id as any).toString(),
+        name:       a.name,
+        slug:       a.slug,
+        image:      a.image,
+        isVerified: a.isVerified,
+        followers:  a.followersCount,
+        genres:     a.genres,
+        userId:     a.userId?.toString(),
       })),
     });
   } catch (err) {

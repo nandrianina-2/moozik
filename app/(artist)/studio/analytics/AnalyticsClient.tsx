@@ -32,16 +32,50 @@ type ChartView = "streams" | "revenue";
 
 export function AnalyticsClient() {
   const [period, setPeriod]     = useState<Period>("7d");
-  const [data, setData]         = useState<AnalyticsData | null>(null);
   const [loading, setLoading]   = useState(true);
   const [chartView, setChartView] = useState<ChartView>("streams");
 
-  useEffect(() => {
-    setLoading(true);
-    fetch(`/api/analytics?period=${period}`)
-      .then((r) => r.json())
-      .then((d) => { setData(d); setLoading(false); });
+  const [data, setData] = useState<AnalyticsData | null>(null);
+const [error, setError] = useState("");
+
+useEffect(() => {
+  setLoading(true);
+  setError("");
+  fetch(`/api/analytics?period=${period}`)
+    .then((r) => r.json())
+    .then((d) => {
+      if (d.error) {
+        setError(d.error);
+      } else {
+        // Valeurs par défaut pour éviter les undefined
+        setData({
+          period:           d.period           ?? period,
+          totalStreams:     d.totalStreams      ?? 0,
+          totalLikes:       d.totalLikes        ?? 0,
+          totalSongs:       d.totalSongs        ?? 0,
+          estimatedRevenue: d.estimatedRevenue  ?? 0,
+          monthlyProjected: d.monthlyProjected  ?? 0,
+          streamsByDay:     d.streamsByDay      ?? [],
+          topSongs:         d.topSongs          ?? [],
+          allSongs:         d.allSongs          ?? [],
+        });
+      }
+      setLoading(false);
+    })
+    .catch(() => {
+      setError("Erreur lors du chargement");
+      setLoading(false);
+    });
   }, [period]);
+
+  // Ajoute après le check loading :
+  if (error) {
+    return (
+      <div className="px-4 md:px-6 py-20 text-center">
+        <p className="text-white/40 text-sm">{error}</p>
+      </div>
+    );
+  }
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null;

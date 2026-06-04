@@ -69,19 +69,36 @@ export async function POST(req: NextRequest) {
 
     await connectDB();
 
-    const artist = await Artist.findOne({ userId: session.user.id });
-    if (!artist) {
-      return NextResponse.json({ error: "Profil artiste introuvable" }, { status: 404 });
-    }
-
-    const { title, audioUrl, coverUrl, duration, genres, lyrics, releaseDate, isPublished, scheduledAt } =
-      await req.json();
+    const {
+      title, audioUrl, coverUrl, duration,
+      genres, lyrics, releaseDate, isPublished,
+      scheduledAt, artistId,
+    } = await req.json();
 
     if (!title?.trim() || !audioUrl) {
-      return NextResponse.json({ error: "Titre et audio requis" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Titre et audio requis" },
+        { status: 400 }
+      );
     }
 
-    // Slug unique
+    let targetArtist;
+
+    if (session.user.role === "admin" && artistId) {
+      // Admin assigne à un artiste spécifique
+      targetArtist = await Artist.findById(artistId);
+    } else {
+      // Artiste uploade pour lui-même
+      targetArtist = await Artist.findOne({ userId: session.user.id });
+    }
+
+    if (!targetArtist) {
+      return NextResponse.json(
+        { error: "Profil artiste introuvable" },
+        { status: 404 }
+      );
+    }
+
     let slug = slugify(title);
     const existing = await Song.findOne({ slug });
     if (existing) slug = `${slug}-${Date.now()}`;
@@ -92,7 +109,7 @@ export async function POST(req: NextRequest) {
       audioUrl,
       coverUrl,
       duration:    duration ?? 0,
-      artist:      artist._id,
+      artist:      targetArtist._id,
       genres:      genres ?? [],
       lyrics,
       isPublished: isPublished ?? true,
@@ -101,11 +118,11 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({
-      id: song._id.toString(),
+      id:    song._id.toString(),
       title: song.title,
     }, { status: 201 });
-  } catch (err) {
-    console.error("[SONG POST]", err);
+  } catch (err: any) {
+    console.error("[SONG POST]", err?.message);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }

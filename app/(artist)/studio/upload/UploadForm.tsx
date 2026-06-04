@@ -10,6 +10,8 @@ import {
 import { Button } from "@/components/ui/Button";
 import { cn, slugify } from "@/lib/utils";
 import Link from "next/link";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useEffect } from "react";
 
 type Genre =
   | "Electronic" | "Hip-Hop" | "R&B" | "Pop" | "Rock"
@@ -67,6 +69,19 @@ export function UploadForm() {
       accept: { "image/*": [".jpg", ".jpeg", ".png", ".webp"] },
       maxFiles: 1,
     });
+
+
+  const { isAdmin } = useCurrentUser();
+  const [artists, setArtists] = useState<{ id: string; name: string }[]>([]);
+  const [selectedArtistId, setSelectedArtistId] = useState("");
+
+  useEffect(() => {
+    if (isAdmin) {
+      fetch("/api/artists")
+        .then((r) => r.json())
+        .then((d) => setArtists(d.artists ?? []));
+    }
+  }, [isAdmin]);
 
   function toggleGenre(g: Genre) {
     setGenres((prev) =>
@@ -140,6 +155,7 @@ export function UploadForm() {
           releaseDate: finalDate.toISOString(),
           isPublished: !scheduled,
           scheduledAt: scheduled ? finalDate.toISOString() : undefined,
+          artistId:    isAdmin ? selectedArtistId : undefined,
         }),
       });
 
@@ -306,6 +322,25 @@ export function UploadForm() {
               )}
             </div>
           </div>
+
+          {isAdmin && (
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-white/50 uppercase tracking-wider">
+                Artiste <span className="text-red-400">*</span>
+              </label>
+              <select
+                value={selectedArtistId}
+                onChange={(e) => setSelectedArtistId(e.target.value)}
+                required={isAdmin}
+                className="w-full h-10 px-3 rounded-lg bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
+              >
+                <option value="">Sélectionner un artiste</option>
+                {artists.map((a) => (
+                  <option key={a.id} value={a.id}>{a.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Titre */}
           <div className="space-y-1.5">

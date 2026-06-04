@@ -28,14 +28,20 @@ export function UsersClient({ users }: { users: UserRow[] }) {
   });
 
   async function handleRoleChange(userId: string, newRole: string) {
-    await fetch(`/api/admin/users/${userId}`, {
-      method: "PATCH",
+    const res = await fetch(`/api/admin/users/${userId}`, {
+      method:  "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ role: newRole }),
+      body:    JSON.stringify({ role: newRole }),
     });
-    setList((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
-    );
+
+    if (res.ok) {
+      setList((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
+      );
+      if (newRole === "artist") {
+        alert("Rôle changé en artiste. L'utilisateur doit se reconnecter pour accéder au studio.");
+      }
+    }
   }
 
   async function handleTogglePremium(userId: string, current: boolean) {

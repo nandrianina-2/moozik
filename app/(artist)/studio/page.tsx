@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import Song from "@/models/Song";
 import Artist from "@/models/Artist";
+import User from "@/models/User";
 import Like from "@/models/Like";
 import { Header } from "@/components/layout/Header";
 import {
@@ -15,8 +16,28 @@ import { SongsList } from "./SongsList";
 async function getStudioData(userId: string) {
   await connectDB();
 
-  const artist = await Artist.findOne({ userId }).lean();
-  if (!artist) return null;
+  let artist = await Artist.findOne({ userId }).lean();
+  if (!artist) {
+    const user = await User.findById(userId).select("name image").lean();
+    if (!user) return null;
+
+    const {slugify} = await import("@/lib/utils");
+    let slug = slugify(user.name as string);
+    const existing = await Artist.findOne({ slug });
+    if (existing) slug = `${slug}-${Date.now()}`;
+
+    artist = await Artist.create({
+      name:           user.name,
+      slug,
+      userId,         
+      isVerified:     false,
+      followersCount: 0,
+      genres:         [],
+      image:          (user as any).image,
+    });
+
+    artist = artist.toObject();
+  }
 
   const artistId = (artist._id as any).toString();
 
