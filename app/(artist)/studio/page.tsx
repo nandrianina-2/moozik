@@ -26,7 +26,7 @@ async function getStudioData(userId: string) {
     const existing = await Artist.findOne({ slug });
     if (existing) slug = `${slug}-${Date.now()}`;
 
-    artist = await Artist.create({
+    artist = (await Artist.create({
       name:           user.name,
       slug,
       userId,         
@@ -34,10 +34,10 @@ async function getStudioData(userId: string) {
       followersCount: 0,
       genres:         [],
       image:          (user as any).image,
-    });
-
-    artist = artist.toObject();
+    })) as any as typeof artist;
   }
+
+  if(!artist) return null;
 
   const artistId = (artist._id as any).toString();
 
