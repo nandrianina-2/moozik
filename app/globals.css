@@ -4,8 +4,12 @@
   --font-sans: "Inter", system-ui, sans-serif;
 }
 
+/* ─── Reset de base ─────────────────────────────────────── */
 * {
   box-sizing: border-box;
+  /* Fix rendu des polices Android Chrome */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 html {
@@ -19,19 +23,86 @@ body {
   min-height: 100dvh;
 }
 
-::-webkit-scrollbar {
-  width: 6px;
+/* ─── Scrollbar ─────────────────────────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #5c4d8a #1e1e1e;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
+
+*::-webkit-scrollbar {
+  width: 8px;
 }
-::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 3px;
+
+*::-webkit-scrollbar-track {
+  background: #1e1e1e;
+  border-radius: 99px;
+  margin: 6px 0;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #5c4d8a;
+  border-radius: 99px;
+  border: 2px solid #141414;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #7b5ec4;
 }
 
 ::selection {
   background: #7f77dd40;
 }
 
-* { scrollbar-width: thin; scrollbar-color: #5c4d8a #1e1e1e; } *::-webkit-scrollbar { width: 8px; /* un peu plus large pour voir l'arrondi */ } *::-webkit-scrollbar-track { background: #1e1e1e; border-radius: 99px; margin: 6px 0; /* espace en haut et en bas */ } *::-webkit-scrollbar-thumb { background: #5c4d8a; border-radius: 99px; border: 2px solid #141414; /* crée un effet "flottant" */ } *::-webkit-scrollbar-thumb:hover { background: #7b5ec4; }
+/* ─── Fix backdrop-blur Android (cause des grains) ──────── */
+@supports not (backdrop-filter: blur(1px)) {
+  .backdrop-blur-md,
+  .backdrop-blur-xl,
+  .backdrop-blur-sm {
+    backdrop-filter: none !important;
+    background-color: #0d0d0df0 !important;
+  }
+}
+
+/* ─── Fix input range Android ───────────────────────────── */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #7c3aed;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #7c3aed;
+  cursor: pointer;
+  border: 2px solid white;
+}
+
+/* ─── Fix Recharts overflow mobile ──────────────────────── */
+.recharts-wrapper,
+.recharts-surface {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* ─── Fix animations ────────────────────────────────────── */
+.animate-pulse {
+  will-change: opacity;
+}

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import {
   Home, Search, Library, Heart, Radio,
   Music2, Upload, BarChart2, Settings,
-  ChevronRight, Users, ListMusic, History, Shield, Crown
+  ChevronRight, Users, ListMusic, History, Shield, Crown, WifiOff
 } from "lucide-react";
 import { AdminLinks } from "./AdminLinks";
 import logo from "@/assets/logo.png";
@@ -23,6 +23,7 @@ const mainLinks = [
   { href: "/history",   icon: History,   label: "Historique" },
   { href: "/radio",     icon: Radio,   label: "Radio" },
   { href: "/subscription", icon: Crown, label: "Premium" },
+  { href: "/offline-library", icon: WifiOff, label: "Offline" }
 ];
 
 const artistLinks = [

@@ -9,7 +9,7 @@ import {
   Home, Search, ListMusic, Heart, Radio,
   Shield, LayoutDashboard, Users, Music2,
   Library, History, MoreHorizontal, X,
-  Upload, BarChart2, Settings, User,
+  Upload, BarChart2, Settings, User, WifiOff
 } from "lucide-react";
 
 const mainLinks = [
@@ -26,6 +26,7 @@ const moreLinks = [
   { href: "/radio",     icon: Radio,    label: "Radio" },
   { href: "/settings",  icon: Settings, label: "Paramètres" },
   { href: "/account",   icon: User,     label: "Mon compte" },
+  { href: "/offline-library", icon: WifiOff, label: "Offline" },
 ];
 
 const artistMoreLinks = [

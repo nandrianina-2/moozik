@@ -38,10 +38,16 @@ function toSong(s: any): SongType {
 
 async function getSongs() {
   await connectDB();
-  const songs = await Song.find({ isPublished: true })
+  const songs = await Song.find({
+    isPublished: true,
+    $or: [
+      { scheduledAt: { $exists: false } },
+      { scheduledAt: { $lte: new Date() } },
+    ],
+  })
     .populate("artist", "name slug image isVerified")
     .sort({ releaseDate: -1 })
-    .lean();
+    .lean();  // Pas de .limit() — affiche tout
   return songs.map(toSong);
 }
 

@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { Play, Pause, Heart, ListPlus } from "lucide-react";
+import { Play, Pause, Heart, ListPlus, WifiOff } from "lucide-react";
 import { useState } from "react";
 import { usePlayerStore } from "@/store/playerStore";
 import { formatDuration, formatCount, cn } from "@/lib/utils";
 import { AddToPlaylistModal } from "@/components/modals/AddToPlaylistModal";
 import type { Song } from "@/types";
 import { optimizeImage } from "@/lib/cloudinary";
+import { useOfflineSongs } from "@/hooks/useOfflineSongs";
 
 interface SongRowProps {
   song: Song;
@@ -27,6 +28,10 @@ export function SongRow({
   const { currentSong, isPlaying, playSong, togglePlay } = usePlayerStore();
   const [liked, setLiked] = useState(song.isLiked ?? false);
   const [showPlaylist, setShowPlaylist] = useState(false);
+
+  const { isDownloaded } = useOfflineSongs();
+  const isOffline = isDownloaded(song.id);
+
 
   const isActive = currentSong?.id === song.id;
 
@@ -124,6 +129,10 @@ export function SongRow({
             </p>
           )}
         </div>
+
+        {isOffline && (
+          <WifiOff size={11} className="text-green-400 flex-shrink-0" />
+        )}
 
         {/* Streams */}
         <span className="hidden md:block text-xs text-white/30 tabular-nums w-12 text-right">

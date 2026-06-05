@@ -50,6 +50,40 @@ function toSongType(s: any, artist: ArtistType): SongType {
   };
 }
 
+function Avatar({
+  src,
+  alt,
+  size = 96,
+  className = "",
+}: {
+  src?: string | null;
+  alt: string;
+  size?: number;
+  className?: string;
+}) {
+  if (!src) {
+    return (
+      <div
+        className={`flex items-center justify-center bg-purple-600/20 text-purple-400 font-bold ${className}`}
+        style={{ fontSize: size / 3 }}
+      >
+        {alt[0]?.toUpperCase()}
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={size}
+      height={size}
+      className={`object-cover ${className}`}
+      unoptimized
+    />
+  );
+}
+
 async function getData(username: string) {
   await connectDB();
 
@@ -150,11 +184,17 @@ export default async function UserProfilePage(
       {/* Cover */}
       <div className="relative h-48 md:h-56 overflow-hidden">
         {profile.coverImage ? (
-          <Image src={profile.coverImage} alt="Cover" fill className="object-cover" />
+          <Image
+            src={profile.coverImage}
+            alt="Cover"
+            fill
+            className="object-cover"
+            unoptimized
+          />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-purple-900/60 via-purple-800/30 to-black" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
       </div>
 
       <div className="px-4 md:px-6 -mt-16 relative max-w-3xl">
@@ -163,7 +203,12 @@ export default async function UserProfilePage(
         <div className="flex items-end gap-4 mb-4">
           <div className="w-24 h-24 rounded-full border-4 border-[#0a0a0a] bg-purple-600/20 overflow-hidden flex-shrink-0 shadow-xl">
             {profile.image ? (
-              <Image src={profile.image} alt={profile.name} fill className="object-cover" />
+              <Avatar
+                src={profile.image}
+                alt={profile.name}
+                size={96}
+                className="w-full h-full"
+              />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-purple-400">
                 {profile.name[0]?.toUpperCase()}

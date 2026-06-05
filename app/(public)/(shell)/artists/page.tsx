@@ -6,18 +6,20 @@ import type { Artist as ArtistType } from "@/types";
 
 async function getArtists(): Promise<ArtistType[]> {
   await connectDB();
-  const artists = await Artist.find().sort({ followersCount: -1 }).lean();
+  const artists = await Artist.find()  // Pas de filtre restrictif
+    .sort({ followersCount: -1, createdAt: -1 })
+    .lean();
   return artists.map((a) => ({
-    id: a._id.toString(),
-    name: a.name ?? "",
-    slug: a.slug ?? "",
-    bio: a.bio,
-    image: a.image,
-    coverImage: a.coverImage,
-    isVerified: a.isVerified ?? false,
-    userId: a.userId?.toString() ?? "",
-    followers: a.followersCount ?? 0,
-    genres: a.genres ?? [],
+    id:         (a._id as any).toString(),
+    name:       a.name as string,
+    slug:       a.slug as string ?? "",
+    bio:        a.bio as string | undefined,
+    image:      a.image as string | undefined,
+    coverImage: a.coverImage as string | undefined,
+    isVerified: a.isVerified as boolean ?? false,
+    userId:     a.userId?.toString() ?? "",
+    followers:  a.followersCount as number ?? 0,
+    genres:     a.genres as string[] ?? [],
   }));
 }
 

@@ -9,7 +9,6 @@ import type { Song as SongType, Artist as ArtistType } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
-import { OnboardingModal } from "@/components/ui/OnboardingModal";
 import { OnboardingWrapper } from "@/components/ui/OnboardingWrapper";
 import { getAvatarUrl } from "@/lib/cloudinary";
 
@@ -65,7 +64,13 @@ async function getData() {
       .sort({ releaseDate: -1 })
       .limit(8)
       .lean(),
-    Song.find({ isPublished: true })
+    Song.find({
+        isPublished: true,
+        $or: [
+          { scheduledAt: { $exists: false } },
+          { scheduledAt: { $lte: new Date() } },
+        ],
+      })
       .populate("artist", "name slug image isVerified")
       .sort({ streamCount: -1 })
       .limit(8)
@@ -109,7 +114,6 @@ export default async function DashboardPage() {
     <>
       <OnboardingWrapper />
       <div className="pb-32">
-        <OnboardingModal />
         <Header title="Accueil" />
 
         <div className="px-4 md:px-6 py-6 space-y-10">

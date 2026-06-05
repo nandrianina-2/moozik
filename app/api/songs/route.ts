@@ -24,9 +24,15 @@ export async function GET(req: NextRequest) {
         { scheduledAt: { $lte: new Date() } },
       ],
     };
+
     if (genre)  filter.genres = genre;
     if (artist) filter.artist = artist;
-    if (search) filter.$text  = { $search: search };
+    if (search) {
+      filter.$or = [
+        { title:  { $regex: search, $options: "i" } },
+        { genres: { $regex: search, $options: "i" } },
+      ];
+    }
 
     const sortMap: Record<string, any> = {
       recent:  { releaseDate: -1 },
