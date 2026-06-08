@@ -106,3 +106,86 @@ input[type="range"]::-moz-range-thumb {
 .animate-pulse {
   will-change: opacity;
 }
+
+/* ── Fix Android Chrome rendering ── */
+
+/* Désactive backdrop-blur sur Android */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .backdrop-blur-sm,
+  .backdrop-blur-md,
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl,
+  .backdrop-blur-3xl {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Fix grain sur les gradients semi-transparents Android */
+@supports (-webkit-overflow-scrolling: touch) {
+  [class*="from-purple"],
+  [class*="from-pink"],
+  [class*="bg-gradient"] {
+    background-attachment: initial;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+}
+
+/* Force GPU compositing pour les éléments qui bougent */
+.fixed,
+.sticky {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Fix antialiasing Android */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Fix input range Android */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.15);
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #7c3aed;
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #7c3aed;
+  cursor: pointer;
+  border: 2px solid #fff;
+}
+
+/* Fix Recharts mobile overflow */
+.recharts-wrapper {
+  max-width: 100% !important;
+}
+
+.recharts-surface {
+  overflow: hidden !important;
+}

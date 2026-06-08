@@ -9,7 +9,7 @@ import {
   ChevronRight, Users, ListMusic, History, Shield, Crown, WifiOff
 } from "lucide-react";
 import { AdminLinks } from "./AdminLinks";
-import logo from "@/assets/logo.png";
+import logo from "@app/icon-192.png";
 import Image from "next/image";
 
 
