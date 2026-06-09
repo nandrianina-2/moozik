@@ -72,6 +72,9 @@ export default function AccountPage() {
   const { supported, subscribed, loading: pushLoading, subscribe, unsubscribe } =
     usePushNotifications();
 
+  // BUG FIX 1: Les 3 fetch étaient appelés directement dans le corps du composant
+  // (hors useEffect), ce qui provoquait un fetch infini à chaque re-render.
+  // Regroupés dans un seul useEffect avec [] pour n'exécuter qu'au montage.
   useEffect(() => {
     fetch("/api/users/me")
       .then((r) => r.json())
@@ -89,17 +92,17 @@ export default function AccountPage() {
         });
         setLoading(false);
       });
+
+    fetch("/api/users/sessions")
+      .then((r) => r.json())
+      .then((d) => setSessions(d.sessions ?? []));
+
+    fetch("/api/users/settings")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.notifications) setNotifSettings(d.notifications);
+      });
   }, []);
-
-  fetch("/api/users/sessions")
-    .then((r) => r.json())
-    .then((d) => setSessions(d.sessions ?? []));
-
-  fetch("/api/users/settings")
-    .then((r) => r.json())
-    .then((d) => {
-      if (d.notifications) setNotifSettings(d.notifications);
-    });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
@@ -272,13 +275,18 @@ export default function AccountPage() {
       <div className="mx-auto px-4 md:px-6 py-6">
 
         {/* Cover + Avatar */}
-        <div className="relative mb-16 rounded-2xl overflow-hidden">
+        {/* BUG FIX 2: mb-16 (64px) insuffisant — l'avatar déborde de 40px sous le
+            conteneur (h-20 positionné à -bottom-10), il ne restait que 24px de marge.
+            mb-20 (80px) garantit que l'avatar ne chevauche pas le contenu suivant. */}
+        <div className="relative mb-20 rounded-2xl overflow-hidden">
           {/* Cover */}
           <div
             {...getCoverProps()}
             className="relative h-36 bg-gradient-to-br from-purple-900/60 to-black cursor-pointer group"
           >
-            <input {...getCoverInput()} />
+            {/* BUG FIX 3: l'input sans className pouvait être visible ou intercepter
+                les clics. On le force à hidden pour que le groupe hover fonctionne. */}
+            <input {...getCoverInput()} className="hidden" />
             {form.coverImage && (
               <img
                 src={form.coverImage}
@@ -305,12 +313,16 @@ export default function AccountPage() {
             {...getAvatarProps()}
             className="absolute -bottom-10 left-4 w-20 h-20 rounded-full border-4 border-[#0a0a0a] bg-purple-600/20 cursor-pointer group overflow-hidden"
           >
-            <input {...getAvatarInput()} />
+            {/* BUG FIX 3 (suite): même correctif pour l'input avatar */}
+            <input {...getAvatarInput()} className="hidden" />
             {form.image ? (
-              <img src={form.image} alt={form.name} className="w-full h-full object-cover" />
+              // BUG FIX 4: alt={form.name} crashait si form.name est undefined
+              <img src={form.image} alt={form.name ?? "Avatar"} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-purple-400">
-                {form.name[0]?.toUpperCase()}
+                {/* BUG FIX 5: form.name[0] crashait si form.name est undefined/null.
+                    L'optional chaining sur la string elle-même règle le problème. */}
+                {(form.name?.[0] ?? "?").toUpperCase()}
               </div>
             )}
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
