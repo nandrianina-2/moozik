@@ -30,6 +30,7 @@ moozik
 │  │  │  ├─ library
 │  │  │  │  ├─ LibraryClient.tsx
 │  │  │  │  └─ page.tsx
+│  │  │  ├─ loading.tsx
 │  │  │  ├─ page.tsx
 │  │  │  └─ users
 │  │  │     ├─ page.tsx
@@ -44,6 +45,7 @@ moozik
 │  │     ├─ analytics
 │  │     │  ├─ AnalyticsClient.tsx
 │  │     │  └─ page.tsx
+│  │     ├─ loading.tsx
 │  │     ├─ page.tsx
 │  │     ├─ songs
 │  │     │  └─ [id]
@@ -57,19 +59,26 @@ moozik
 │  │  ├─ account
 │  │  │  └─ page.tsx
 │  │  ├─ dashboard
+│  │  │  ├─ loading.tsx
 │  │  │  └─ page.tsx
 │  │  ├─ favorites
+│  │  │  ├─ FavoritesClient.tsx
 │  │  │  └─ page.tsx
 │  │  ├─ history
+│  │  │  ├─ HistoryClient.tsx
 │  │  │  └─ page.tsx
 │  │  ├─ layout.tsx
 │  │  ├─ library
+│  │  │  ├─ loading.tsx
+│  │  │  └─ page.tsx
+│  │  ├─ offline-library
 │  │  │  └─ page.tsx
 │  │  ├─ player
 │  │  │  ├─ layout.tsx
 │  │  │  └─ page.tsx
 │  │  ├─ playlists
 │  │  │  ├─ page.tsx
+│  │  │  ├─ PlaylistsClient.tsx
 │  │  │  └─ [id]
 │  │  │     ├─ page.tsx
 │  │  │     └─ PlaylistPageClient.tsx
@@ -77,31 +86,44 @@ moozik
 │  │  │  ├─ page.tsx
 │  │  │  └─ RadioClient.tsx
 │  │  ├─ search
+│  │  │  ├─ loading.tsx
 │  │  │  ├─ page.tsx
 │  │  │  └─ SearchClient.tsx
+│  │  ├─ settings
+│  │  │  └─ page.tsx
 │  │  └─ subscription
-│  │     └─ page.tsx
+│  │     ├─ page.tsx
+│  │     └─ SubscriptionContent.tsx
 │  ├─ (public)
-│  │  ├─ albums
-│  │  │  └─ [id]
-│  │  │     ├─ AlbumClient.tsx
+│  │  ├─ (noShell)
+│  │  │  ├─ layout.tsx
+│  │  │  ├─ login
+│  │  │  │  └─ page.tsx
+│  │  │  └─ register
 │  │  │     └─ page.tsx
-│  │  ├─ artists
-│  │  │  ├─ ArtistsGrid.tsx
-│  │  │  ├─ page.tsx
-│  │  │  └─ [id]
-│  │  │     ├─ ArtistClient.tsx
-│  │  │     └─ page.tsx
-│  │  ├─ layout.tsx
-│  │  ├─ login
-│  │  │  └─ page.tsx
-│  │  ├─ page.tsx
-│  │  ├─ register
-│  │  │  └─ page.tsx
-│  │  └─ u
-│  │     └─ [username]
-│  │        ├─ page.tsx
-│  │        └─ ProfileClient.tsx
+│  │  ├─ (shell)
+│  │  │  ├─ albums
+│  │  │  │  └─ [id]
+│  │  │  │     ├─ AlbumClient.tsx
+│  │  │  │     ├─ loading.tsx
+│  │  │  │     └─ page.tsx
+│  │  │  ├─ artists
+│  │  │  │  ├─ ArtistsGrid.tsx
+│  │  │  │  ├─ page.tsx
+│  │  │  │  └─ [id]
+│  │  │  │     ├─ ArtistClient.tsx
+│  │  │  │     ├─ loading.tsx
+│  │  │  │     └─ page.tsx
+│  │  │  ├─ layout.tsx
+│  │  │  ├─ s
+│  │  │  │  └─ [slug]
+│  │  │  │     ├─ page.tsx
+│  │  │  │     └─ SmartLinkClient.tsx
+│  │  │  └─ u
+│  │  │     └─ [username]
+│  │  │        ├─ page.tsx
+│  │  │        └─ ProfileClient.tsx
+│  │  └─ layout.tsx
 │  ├─ api
 │  │  ├─ admin
 │  │  │  ├─ artists
@@ -137,9 +159,14 @@ moozik
 │  │  │     ├─ route.ts
 │  │  │     └─ songs
 │  │  │        └─ route.ts
+│  │  ├─ push
+│  │  │  └─ route.ts
 │  │  ├─ search
 │  │  │  └─ route.ts
 │  │  ├─ songs
+│  │  │  ├─ by-slug
+│  │  │  │  └─ [slug]
+│  │  │  │     └─ route.ts
 │  │  │  ├─ route.ts
 │  │  │  └─ [id]
 │  │  │     ├─ comments
@@ -167,19 +194,26 @@ moozik
 │  │     │  ├─ password
 │  │     │  │  └─ route.ts
 │  │     │  └─ route.ts
+│  │     ├─ sessions
+│  │     │  └─ route.ts
+│  │     ├─ settings
+│  │     │  └─ route.ts
 │  │     └─ [username]
 │  │        └─ route.ts
+│  ├─ error.tsx
 │  ├─ favicon.ico
 │  ├─ globals.css
+│  ├─ icon-192.png
 │  ├─ layout.tsx
+│  ├─ loading.tsx
 │  ├─ manifest.ts
+│  ├─ not-found.tsx
 │  ├─ page.tsx
 │  ├─ robots.ts
 │  └─ sitemap.ts
-├─ assets
-│  └─ logo.png
 ├─ CLAUDE.md
 ├─ components
+│  ├─ LandingPage.tsx
 │  ├─ layout
 │  │  ├─ AdminLinks.tsx
 │  │  ├─ AppShell.tsx
@@ -199,6 +233,7 @@ moozik
 │  │  ├─ MiniPlayer.tsx
 │  │  ├─ panels
 │  │  │  ├─ CommentsPanel.tsx
+│  │  │  ├─ EQPanel.tsx
 │  │  │  ├─ InfosPanel.tsx
 │  │  │  └─ QueuePanel.tsx
 │  │  ├─ PlayerActions.tsx
@@ -220,15 +255,18 @@ moozik
 ├─ hooks
 │  ├─ useCurrentUser.ts
 │  ├─ useKeyboardShortcuts.ts
-│  └─ usePlayer.ts
+│  ├─ useOfflineSongs.ts
+│  ├─ usePlayer.ts
+│  └─ usePushNotifications.ts
 ├─ lib
 │  ├─ audioEngine.ts
 │  ├─ auth.ts
+│  ├─ cloudinary.ts
 │  ├─ db.ts
+│  ├─ pushNotification.ts
 │  ├─ rateLimit.ts
 │  ├─ stripe.ts
 │  └─ utils.ts
-├─ middleware.ts
 ├─ models
 │  ├─ Album.ts
 │  ├─ Artist.ts
@@ -237,14 +275,17 @@ moozik
 │  ├─ Like.ts
 │  ├─ Notification.ts
 │  ├─ Playlist.ts
+│  ├─ PushSubscription.ts
+│  ├─ Session.ts
 │  ├─ Song.ts
 │  ├─ StreamEvent.ts
-│  └─ User.ts
+│  ├─ User.ts
+│  └─ UserSettings.ts
 ├─ next.config.ts
-├─ not-found.tsx
 ├─ package-lock.json
 ├─ package.json
 ├─ postcss.config.mjs
+├─ proxy.ts
 ├─ README.md
 ├─ scripts
 │  └─ seed.ts
