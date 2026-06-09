@@ -43,6 +43,8 @@ async function getRadioSongs() {
   return songs.map(toSong).sort(() => Math.random() - 0.5);
 }
 
+export const metadata = { title: "Radio" };
+
 export default async function RadioPage() {
   const songs = await getRadioSongs();
 

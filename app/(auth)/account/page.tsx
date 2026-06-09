@@ -5,16 +5,18 @@ import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/Button";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useDropzone } from "react-dropzone";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import {
   Check, Copy, User, AtSign, FileText,
   Camera, Link as LinkIcon, Instagram,
   Twitter, Globe, Lock, Bell, Shield,
   LogOut, Trash2, Crown, ChevronRight,
-  Mic2, Eye, EyeOff, Smartphone,
+  Mic2, Eye, EyeOff, Smartphone, Monitor, Trash2 as TrashIcon
 } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
+
 
 type Tab = "profile" | "security" | "notifications" | "account";
 
@@ -36,6 +38,7 @@ interface AccountData {
 
 export default function AccountPage() {
   const { user, isArtist, isAdmin } = useCurrentUser();
+  const [sessions, setSessions] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>("profile");
   const [form, setForm] = useState<AccountData>({
     name: "", username: "", bio: "", email: "",
@@ -66,6 +69,9 @@ export default function AccountPage() {
   });
   const [notifLoading, setNotifLoading] = useState(false);
 
+  const { supported, subscribed, loading: pushLoading, subscribe, unsubscribe } =
+    usePushNotifications();
+
   useEffect(() => {
     fetch("/api/users/me")
       .then((r) => r.json())
@@ -84,6 +90,10 @@ export default function AccountPage() {
         setLoading(false);
       });
   }, []);
+
+  fetch("/api/users/sessions")
+    .then((r) => r.json())
+    .then((d) => setSessions(d.sessions ?? []));
 
   fetch("/api/users/settings")
     .then((r) => r.json())
@@ -219,6 +229,15 @@ export default function AccountPage() {
     setTimeout(() => setPassMsg(""), 3000);
   }
 
+  async function revokeSession(sessionId: string) {
+    await fetch("/api/users/sessions", {
+      method:  "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ sessionId }),
+    });
+    setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+  }
+
   function copyProfileLink() {
     if (!form.username) return;
     navigator.clipboard.writeText(`${window.location.origin}/u/${form.username}`);
@@ -324,31 +343,31 @@ export default function AccountPage() {
           )}
         </div>
 
-        {/* // Après les badges, ajoute les infos artiste si disponibles */}
+        {/* Infos artiste si disponibles */}
         {form.role === "artist" && (form as any).artist && (
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-purple-500/5 border border-purple-500/10 mb-2">
-                <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                    {(form as any).artist?.isVerified && (
-                    <span className="text-xs text-purple-400">✓ Vérifié</span>
-                    )}
-                    <span className="text-xs text-white/40">
-                    {(form as any).artist?.followersCount?.toLocaleString()} abonnés
-                    </span>
-                    {(form as any).artist?.genres?.slice(0, 2).map((g: string) => (
-                    <span key={g} className="text-xs text-white/25 bg-white/5 px-2 py-0.5 rounded-full">
-                        {g}
-                    </span>
-                    ))}
-                </div>
-                <Link
-                    href={`/artists/${sessionUser?.id}`}
-                    className="text-xs text-purple-400/60 hover:text-purple-400 transition-colors mt-0.5 block"
-                >
-                    Voir mon profil public artiste →
-                </Link>
-                </div>
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-purple-500/5 border border-purple-500/10 mb-2">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                {(form as any).artist?.isVerified && (
+                  <span className="text-xs text-purple-400">✓ Vérifié</span>
+                )}
+                <span className="text-xs text-white/40">
+                  {(form as any).artist?.followersCount?.toLocaleString()} abonnés
+                </span>
+                {(form as any).artist?.genres?.slice(0, 2).map((g: string) => (
+                  <span key={g} className="text-xs text-white/25 bg-white/5 px-2 py-0.5 rounded-full">
+                    {g}
+                  </span>
+                ))}
+              </div>
+              <Link
+                href={`/artists/${sessionUser?.id}`}
+                className="text-xs text-purple-400/60 hover:text-purple-400 transition-colors mt-0.5 block"
+              >
+                Voir mon profil public artiste →
+              </Link>
             </div>
+          </div>
         )}
 
         {/* Raccourcis rapides */}
@@ -516,72 +535,67 @@ export default function AccountPage() {
         {/* ── SÉCURITÉ ── */}
         {activeTab === "security" && (
           <div className="space-y-6">
-            <form onSubmit={handleChangePassword} className="space-y-4">
-              <h3 className="text-sm font-semibold text-white">
-                Changer le mot de passe
-              </h3>
-
-              {[
-                { label: "Mot de passe actuel", value: currentPassword, setter: setCurrentPassword },
-                { label: "Nouveau mot de passe", value: newPassword, setter: setNewPassword },
-                { label: "Confirmer le nouveau", value: confirmPassword, setter: setConfirmPassword },
-              ].map(({ label, value, setter }) => (
-                <div key={label} className="space-y-1.5">
-                  <label className="text-xs font-semibold text-white/50 uppercase tracking-wider">
-                    {label}
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPass ? "text" : "password"}
-                      value={value}
-                      onChange={(e) => setter(e.target.value)}
-                      required
-                      minLength={6}
-                      className="w-full h-10 px-3 pr-10 rounded-lg bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPass((p) => !p)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60"
-                    >
-                      {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
-                    </button>
-                  </div>
-                </div>
-              ))}
-
-              {passMsg && (
-                <p className={cn(
-                  "text-sm px-3 py-2 rounded-lg",
-                  passMsg.startsWith("✓")
-                    ? "bg-green-500/10 text-green-400"
-                    : "bg-red-500/10 text-red-400"
-                )}>
-                  {passMsg}
-                </p>
-              )}
-
-              <Button type="submit" variant="secondary" className="w-full">
-                Changer le mot de passe
-              </Button>
-            </form>
-
-            {/* Sessions actives */}
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-white">
-                Session active
-              </h3>
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
-                <div className="w-9 h-9 rounded-lg bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                  <Smartphone size={16} className="text-green-400" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-white font-medium">Session actuelle</p>
-                  <p className="text-xs text-white/40">Navigateur web · Maintenant</p>
-                </div>
-                <div className="w-2 h-2 rounded-full bg-green-400" />
+            <h3 className="text-sm font-semibold text-white">
+              Sessions actives
+            </h3>
+            {sessions.length === 0 ? (
+              <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-center">
+                <p className="text-sm text-white/40">Aucune session enregistrée</p>
               </div>
-            </div>
+            ) : (
+              sessions.map((s) => (
+                <div
+                  key={s.id}
+                  className={cn(
+                    "flex items-center gap-3 p-3 rounded-xl border transition-all",
+                    s.isCurrent
+                      ? "bg-green-500/5 border-green-500/20"
+                      : "bg-white/5 border-white/5"
+                  )}
+                >
+                  <div className={cn(
+                    "w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0",
+                    s.isCurrent ? "bg-green-500/10" : "bg-white/5"
+                  )}>
+                    {s.userAgent?.toLowerCase().includes("mobile")
+                      ? <Smartphone size={16} className={s.isCurrent ? "text-green-400" : "text-white/30"} />
+                      : <Monitor size={16} className={s.isCurrent ? "text-green-400" : "text-white/30"} />
+                    }
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-white truncate">
+                        {s.userAgent || "Navigateur web"}
+                      </p>
+                      {s.isCurrent && (
+                        <span className="text-[10px] bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                          Actuelle
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-white/40">
+                      {s.ip !== "unknown" ? `${s.ip} · ` : ""}
+                      Dernière activité :{" "}
+                      {new Date(s.lastSeen).toLocaleDateString("fr-FR", {
+                        day:    "numeric",
+                        month:  "short",
+                        hour:   "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
+                  {!s.isCurrent && (
+                    <button
+                      onClick={() => revokeSession(s.id)}
+                      className="p-1.5 rounded-lg text-white/20 hover:text-red-400 hover:bg-red-400/10 transition-all flex-shrink-0"
+                      title="Révoquer cette session"
+                    >
+                      <TrashIcon size={14} />
+                    </button>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         )}
 
@@ -597,32 +611,50 @@ export default function AccountPage() {
               { key: "comments",  label: "Commentaires",         desc: "Nouveaux commentaires" },
               { key: "newSongs",  label: "Nouvelles sorties",    desc: "Artistes que tu suis" },
               { key: "push",      label: "Notifications push",   desc: "Sur mobile et bureau" },
-            ].map(({ key, label, desc }) => {
-              const k = key as keyof typeof notifSettings;
-              return (
-                <div
-                  key={key}
-                  className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-white">{label}</p>
-                    <p className="text-xs text-white/40">{desc}</p>
-                  </div>
+            ].map(({ key, label, desc }) => (
+              <div
+                key={key}
+                className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5"
+              >
+                <div>
+                  <p className="text-sm font-medium text-white">{label}</p>
+                  <p className="text-xs text-white/40">{desc}</p>
+                </div>
+                {key === "push" ? (
                   <button
-                    onClick={() => handleToggleNotif(k)}
+                    onClick={subscribed ? unsubscribe : subscribe}
+                    disabled={!supported || pushLoading}
                     className={cn(
                       "relative w-10 h-5 rounded-full transition-colors",
-                      notifSettings[k] ? "bg-purple-600" : "bg-white/20"
+                      subscribed ? "bg-purple-600" : "bg-white/20",
+                      (!supported || pushLoading) && "opacity-50 cursor-not-allowed"
                     )}
                   >
                     <span className={cn(
                       "absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform",
-                      notifSettings[k] ? "translate-x-5" : "translate-x-0"
+                      subscribed ? "translate-x-5" : "translate-x-0"
                     )} />
                   </button>
-                </div>
-              );
-            })}
+                ) : (
+                  <button
+                    onClick={() => handleToggleNotif(key as keyof typeof notifSettings)}
+                    className={cn(
+                      "relative w-10 h-5 rounded-full transition-colors",
+                      notifSettings[key as keyof typeof notifSettings]
+                        ? "bg-purple-600"
+                        : "bg-white/20"
+                    )}
+                  >
+                    <span className={cn(
+                      "absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform",
+                      notifSettings[key as keyof typeof notifSettings]
+                        ? "translate-x-5"
+                        : "translate-x-0"
+                    )} />
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
         )}
 

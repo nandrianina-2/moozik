@@ -17,6 +17,8 @@ interface Playlist {
   createdAt: string;
 }
 
+export const metadata = { title: "Mes playlists" };
+
 export default function PlaylistsPage() {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [loading, setLoading] = useState(true);

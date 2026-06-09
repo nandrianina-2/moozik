@@ -76,6 +76,8 @@ async function getStudioData(userId: string) {
   };
 }
 
+export const metadata = { title: "Mon studio" };
+
 export default async function StudioPage() {
   const session = await auth();
   const data = await getStudioData(session!.user.id);

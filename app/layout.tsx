@@ -7,15 +7,25 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title:       { default: "Moozik", template: "%s — Moozik" },
-  description: "Moozik streaming",
+  description: "Streaming musical indépendant — Découvre des artistes, crée tes playlists",
   manifest:    "/manifest.webmanifest",
-  appleWebApp: {
-    capable:       true,
-    statusBarStyle: "black-translucent",
-    title:         "Moozik",
+  openGraph: {
+    type:        "website",
+    siteName:    "Moozik",
+    title:       "Moozik — Streaming musical indépendant",
+    description: "Découvre et écoute de la musique indépendante",
+    images:      [{ url: "/icon-512.png", width: 512, height: 512 }],
   },
-  other: {
-    "mobile-web-app-capable": "yes",
+  twitter: {
+    card:        "summary",
+    title:       "Moozik",
+    description: "Streaming musical indépendant",
+    images:      ["/icon-512.png"],
+  },
+  appleWebApp: {
+    capable:        true,
+    statusBarStyle: "black-translucent",
+    title:          "Moozik",
   },
 };
 

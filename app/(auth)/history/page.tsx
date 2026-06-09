@@ -41,6 +41,8 @@ function groupByDate(items: HistoryItem[]) {
   return groups;
 }
 
+export const metadata = { title: "Historique" };
+
 export default function HistoryPage() {
   const [items, setItems] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);

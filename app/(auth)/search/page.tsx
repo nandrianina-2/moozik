@@ -51,6 +51,8 @@ async function getData() {
   };
 }
 
+export const metadata = { title: "Recherche" };
+
 export default async function SearchPage() {
   const { songs, artists } = await getData();
 

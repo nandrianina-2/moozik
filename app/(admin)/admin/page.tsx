@@ -51,6 +51,8 @@ async function getStats() {
   };
 }
 
+export const metadata = { title: "Administration" };
+
 export default async function AdminPage() {
   const stats = await getStats();
 

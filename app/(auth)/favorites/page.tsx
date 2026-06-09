@@ -6,6 +6,8 @@ import { SongRow } from "@/components/music/SongRow";
 import { Heart } from "lucide-react";
 import type { Song } from "@/types";
 
+export const metadata = { title: "Favoris" };
+
 export default function FavoritesPage() {
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);

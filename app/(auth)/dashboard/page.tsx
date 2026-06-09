@@ -96,6 +96,10 @@ async function getData() {
   };
 }
 
+export const metadata = {
+  title: "Accueil",
+};
+
 export default async function DashboardPage() {
   const {
     recentSongs,

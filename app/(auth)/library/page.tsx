@@ -51,6 +51,8 @@ async function getSongs() {
   return songs.map(toSong);
 }
 
+export const metadata = { title: "Bibliothèque" };
+
 export default async function LibraryPage() {
   const songs = await getSongs();
 
