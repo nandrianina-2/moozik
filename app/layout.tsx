@@ -41,6 +41,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
+        <link rel="manifest" href="/manifest.webmanifest" />
       </head>
       <body className={`${inter.variable} font-sans bg-[#0a0a0a] text-white`}>
         <Providers>{children}</Providers>

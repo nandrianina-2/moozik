@@ -61,6 +61,8 @@ moozik
 │  │  ├─ dashboard
 │  │  │  ├─ loading.tsx
 │  │  │  └─ page.tsx
+│  │  ├─ discover
+│  │  │  └─ page.tsx
 │  │  ├─ favorites
 │  │  │  ├─ FavoritesClient.tsx
 │  │  │  └─ page.tsx
@@ -161,6 +163,10 @@ moozik
 │  │  │        └─ route.ts
 │  │  ├─ push
 │  │  │  └─ route.ts
+│  │  ├─ recommendations
+│  │  │  ├─ route.ts
+│  │  │  └─ similar
+│  │  │     └─ route.ts
 │  │  ├─ search
 │  │  │  └─ route.ts
 │  │  ├─ songs
@@ -253,6 +259,7 @@ moozik
 │     └─ Skeleton.tsx
 ├─ eslint.config.mjs
 ├─ hooks
+│  ├─ useAutoQueue.ts
 │  ├─ useCurrentUser.ts
 │  ├─ useKeyboardShortcuts.ts
 │  ├─ useOfflineSongs.ts
@@ -265,6 +272,7 @@ moozik
 │  ├─ db.ts
 │  ├─ pushNotification.ts
 │  ├─ rateLimit.ts
+│  ├─ recommendations.ts
 │  ├─ stripe.ts
 │  └─ utils.ts
 ├─ models
@@ -286,6 +294,10 @@ moozik
 ├─ package.json
 ├─ postcss.config.mjs
 ├─ proxy.ts
+├─ public
+│  ├─ icon-192.png
+│  ├─ icon-512.png
+│  └─ icon-maskable-512.png
 ├─ README.md
 ├─ scripts
 │  └─ seed.ts
