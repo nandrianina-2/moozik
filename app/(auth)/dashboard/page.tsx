@@ -11,6 +11,8 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { OnboardingWrapper } from "@/components/ui/OnboardingWrapper";
 import { getAvatarUrl } from "@/lib/cloudinary";
+import { getRecommendations } from "@/lib/recommendations";
+import { cn } from "@/lib/utils";
 
 function toArtist(a: any): ArtistType {
   return {
@@ -50,6 +52,10 @@ async function getData() {
   await connectDB();
 
   const session = await auth();
+
+  const recommendations = session?.user?.id
+    ? await getRecommendations({ userId: session.user.id, limit: 8 })
+    : { songs: [], topGenres: [], hasHistory: false };
 
   const [
     recentSongs,
@@ -93,6 +99,7 @@ async function getData() {
     totalSongs,
     totalArtists,
     userLikes,
+    recommendations,
   };
 }
 
@@ -108,6 +115,7 @@ export default async function DashboardPage() {
     totalSongs,
     totalArtists,
     userLikes,
+    recommendations,
   } = await getData();
 
   const songs = recentSongs.map(toSong);
@@ -224,6 +232,55 @@ export default async function DashboardPage() {
             </div>
           </section>
 
+          {recommendations.songs.length > 0 && (
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-base font-semibold text-white">
+                    {recommendations.hasHistory
+                      ? "Recommandés pour toi"
+                      : "À découvrir"}
+                  </h2>
+                  {recommendations.topGenres.length > 0 && (
+                    <p className="text-xs text-white/30 mt-0.5">
+                      Basé sur tes goûts · {recommendations.topGenres.slice(0, 3).join(", ")}
+                    </p>
+                  )}
+                </div>
+                <Link
+                  href="/discover"
+                  className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
+                >
+                  Voir plus
+                </Link>
+              </div>
+              <div className="flex flex-col gap-1">
+                {recommendations.songs.map((song, i) => (
+                  <div key={song.id} className="relative">
+                    <SongRow
+                      song={song}
+                      queue={recommendations.songs}
+                      index={i}
+                      showIndex={false}
+                    />
+                    {/* Badge raison */}
+                    <span className={cn(
+                      "absolute right-16 top-1/2 -translate-y-1/2 text-[10px] px-1.5 py-0.5 rounded-full hidden md:block",
+                      song.reason === "artist"    && "bg-purple-500/20 text-purple-400",
+                      song.reason === "genre"     && "bg-blue-500/20 text-blue-400",
+                      song.reason === "trending"  && "bg-orange-500/20 text-orange-400",
+                      song.reason === "discovery" && "bg-green-500/20 text-green-400",
+                    )}>
+                      {song.reason === "artist"    && "Artiste suivi"}
+                      {song.reason === "genre"     && "Ton genre"}
+                      {song.reason === "trending"  && "Tendance"}
+                      {song.reason === "discovery" && "Découverte"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </div>
     </>

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import {
   Home, Search, Library, Heart, Radio,
   Music2, Upload, BarChart2, Settings,
-  ChevronRight, Users, ListMusic, History, Shield, Crown, WifiOff
+  ChevronRight, Users, ListMusic, History, Shield, Crown, WifiOff, Compass
 } from "lucide-react";
 import { AdminLinks } from "./AdminLinks";
 import icon from "../../app/icon-192.png";
@@ -22,6 +22,7 @@ const mainLinks = [
   { href: "/favorites", icon: Heart,   label: "Favoris" },
   { href: "/history",   icon: History,   label: "Historique" },
   { href: "/radio",     icon: Radio,   label: "Radio" },
+  { href: "/discover", icon: Compass, label: "Découverte" },
   { href: "/subscription", icon: Crown, label: "Premium" },
   { href: "/offline-library", icon: WifiOff, label: "Offline" }
 ];
